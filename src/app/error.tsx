@@ -13,6 +13,13 @@ export default function ErrorBoundary({
 }) {
   useEffect(() => {
     console.error('Fieldwork Application Error:', error);
+    // Automatically reload once to recover from stale/missing chunks (deployment skew or corrupted cache)
+    if (
+      typeof window !== 'undefined' &&
+      (error.message?.includes('Loading chunk') || error.name === 'ChunkLoadError')
+    ) {
+      window.location.reload();
+    }
   }, [error]);
 
   return (

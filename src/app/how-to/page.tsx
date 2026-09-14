@@ -9,6 +9,7 @@ export const metadata = {
     'Step-by-step guide on how to configure your development signals and get the most out of your Fieldwork development roadmap.',
 };
 
+// User Guide & Deliverables page
 export default function HowToPage() {
   return (
     <div className="studio-root">
