@@ -103,14 +103,7 @@ function PeerReviewContent() {
         </section>
 
         {/* 2-Column Grid: Left Controls, Right Live Polygon */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
-            gap: '24px',
-            alignItems: 'start',
-          }}
-        >
+        <div className="peer-review-grid">
           {/* Left Column: Peer Inputs */}
           <div className="hf-card">
             <div className="hf-card-header">

@@ -329,27 +329,28 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
                     {fc.scenario}
                   </p>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div className="forced-choice-grid">
                     <button
                       type="button"
                       onClick={() => handleTraitChange('follow', 3)}
                       style={{
                         textAlign: 'left',
-                        padding: '8px 10px',
+                        padding: '10px 12px',
+                        minHeight: '48px',
                         borderRadius: 'var(--r-default)',
                         background: isRestart ? 'var(--lime-50-a20)' : 'var(--white-a5)',
                         border: `1px solid ${isRestart ? 'var(--lime-100)' : 'var(--white-a10)'}`,
                         color: isRestart ? 'var(--lime-100)' : 'var(--white-a80)',
                         cursor: 'pointer',
-                        fontSize: '11.5px',
+                        fontSize: '12px',
                         lineHeight: 1.35,
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <strong style={{ display: 'block', marginBottom: '2px', color: isRestart ? 'var(--white)' : 'var(--white-a90)' }}>
+                      <strong style={{ display: 'block', marginBottom: '3px', color: isRestart ? 'var(--white)' : 'var(--white-a90)' }}>
                         Scrap &amp; Restart Fresh
                       </strong>
-                      <span style={{ fontSize: '11px', color: isRestart ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                      <span style={{ fontSize: '11.5px', color: isRestart ? 'var(--white-a80)' : 'var(--white-a60)' }}>
                         I&rsquo;d rather abandon stalled work and chase a fresh idea.
                       </span>
                     </button>
@@ -359,21 +360,22 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
                       onClick={() => handleTraitChange('follow', 9)}
                       style={{
                         textAlign: 'left',
-                        padding: '8px 10px',
+                        padding: '10px 12px',
+                        minHeight: '48px',
                         borderRadius: 'var(--r-default)',
                         background: isFinishBadly ? 'var(--lime-50-a20)' : 'var(--white-a5)',
                         border: `1px solid ${isFinishBadly ? 'var(--lime-100)' : 'var(--white-a10)'}`,
                         color: isFinishBadly ? 'var(--lime-100)' : 'var(--white-a80)',
                         cursor: 'pointer',
-                        fontSize: '11.5px',
+                        fontSize: '12px',
                         lineHeight: 1.35,
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <strong style={{ display: 'block', marginBottom: '2px', color: isFinishBadly ? 'var(--white)' : 'var(--white-a90)' }}>
+                      <strong style={{ display: 'block', marginBottom: '3px', color: isFinishBadly ? 'var(--white)' : 'var(--white-a90)' }}>
                         Finish It Badly
                       </strong>
-                      <span style={{ fontSize: '11px', color: isFinishBadly ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                      <span style={{ fontSize: '11.5px', color: isFinishBadly ? 'var(--white-a80)' : 'var(--white-a60)' }}>
                         I&rsquo;d rather finish it badly than leave it half-done.
                       </span>
                     </button>
@@ -413,27 +415,28 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
                     {fc.scenario}
                   </p>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div className="forced-choice-grid">
                     <button
                       type="button"
                       onClick={() => handleTraitChange('drive', 3)}
                       style={{
                         textAlign: 'left',
-                        padding: '8px 10px',
+                        padding: '10px 12px',
+                        minHeight: '48px',
                         borderRadius: 'var(--r-default)',
                         background: isFortify ? 'var(--lime-50-a20)' : 'var(--white-a5)',
                         border: `1px solid ${isFortify ? 'var(--lime-100)' : 'var(--white-a10)'}`,
                         color: isFortify ? 'var(--lime-100)' : 'var(--white-a80)',
                         cursor: 'pointer',
-                        fontSize: '11.5px',
+                        fontSize: '12px',
                         lineHeight: 1.35,
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <strong style={{ display: 'block', marginBottom: '2px', color: isFortify ? 'var(--white)' : 'var(--white-a90)' }}>
+                      <strong style={{ display: 'block', marginBottom: '3px', color: isFortify ? 'var(--white)' : 'var(--white-a90)' }}>
                         Fortify What Works
                       </strong>
-                      <span style={{ fontSize: '11px', color: isFortify ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                      <span style={{ fontSize: '11.5px', color: isFortify ? 'var(--white-a80)' : 'var(--white-a60)' }}>
                         Master and optimize a proven domain without risking public failure.
                       </span>
                     </button>
@@ -443,21 +446,22 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
                       onClick={() => handleTraitChange('drive', 9)}
                       style={{
                         textAlign: 'left',
-                        padding: '8px 10px',
+                        padding: '10px 12px',
+                        minHeight: '48px',
                         borderRadius: 'var(--r-default)',
                         background: isStretch ? 'var(--lime-50-a20)' : 'var(--white-a5)',
                         border: `1px solid ${isStretch ? 'var(--lime-100)' : 'var(--white-a10)'}`,
                         color: isStretch ? 'var(--lime-100)' : 'var(--white-a80)',
                         cursor: 'pointer',
-                        fontSize: '11.5px',
+                        fontSize: '12px',
                         lineHeight: 1.35,
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <strong style={{ display: 'block', marginBottom: '2px', color: isStretch ? 'var(--white)' : 'var(--white-a90)' }}>
+                      <strong style={{ display: 'block', marginBottom: '3px', color: isStretch ? 'var(--white)' : 'var(--white-a90)' }}>
                         Push Into the Deep End
                       </strong>
-                      <span style={{ fontSize: '11px', color: isStretch ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                      <span style={{ fontSize: '11.5px', color: isStretch ? 'var(--white-a80)' : 'var(--white-a60)' }}>
                         Chase an ambiguous, high-stakes stretch even if it might fail.
                       </span>
                     </button>
@@ -526,37 +530,33 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
                   <p style={{ margin: '0 0 6px', fontSize: '12px', color: 'var(--white-a90)', lineHeight: 1.4 }}>
                     &ldquo;{probe.statement}&rdquo;
                   </p>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--white-a50)' }}>Disagree</span>
-                    <div style={{ display: 'flex', gap: '4px', flex: 1, justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--white-a50)', whiteSpace: 'nowrap' }}>Disagree</span>
+                    <div style={{ display: 'flex', gap: '6px', flex: 1, justifyContent: 'center' }}>
                       {[1, 2, 3, 4, 5].map((val) => (
                         <button
                           key={val}
                           type="button"
+                          className="probe-btn"
                           onClick={() => {
                             const next = { ...state.reverseProbes, [probe.id]: val };
                             onChange({ reverseProbes: next });
                           }}
                           style={{
-                            width: '26px',
-                            height: '24px',
-                            borderRadius: '3px',
                             border: `1px solid ${
                               currentScore === val ? 'var(--lime-100)' : 'var(--white-a10)'
                             }`,
                             background:
                               currentScore === val ? 'var(--lime-50-a20)' : 'transparent',
                             color: currentScore === val ? 'var(--lime-100)' : 'var(--white-a70)',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
                           }}
+                          title={`Score ${val} of 5`}
                         >
                           {val}
                         </button>
                       ))}
                     </div>
-                    <span style={{ fontSize: '11px', color: 'var(--white-a50)' }}>Agree</span>
+                    <span style={{ fontSize: '11px', color: 'var(--white-a50)', whiteSpace: 'nowrap' }}>Agree</span>
                   </div>
                 </div>
               );

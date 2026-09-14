@@ -215,13 +215,13 @@ export default function HomePage() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(4px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.78)',
+            backdropFilter: 'blur(5px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 9999,
-            padding: '20px',
+            padding: '12px',
           }}
           onClick={() => setIsShareModalOpen(false)}
         >
@@ -230,9 +230,11 @@ export default function HomePage() {
             style={{
               maxWidth: '540px',
               width: '100%',
-              padding: '24px',
+              padding: '20px 16px',
               borderColor: 'rgba(56, 189, 248, 0.4)',
               background: '#16191c',
+              maxHeight: '92vh',
+              overflowY: 'auto',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -246,7 +248,7 @@ export default function HomePage() {
                     background: '#38bdf8',
                   }}
                 />
-                <h3 style={{ margin: 0, fontSize: '17px', color: 'var(--white)' }}>
+                <h3 style={{ margin: 0, fontSize: '16.5px', color: 'var(--white)' }}>
                   Request Colleague 360° Rating
                 </h3>
               </div>
@@ -270,14 +272,14 @@ export default function HomePage() {
               <label htmlFor="share-input" style={{ fontSize: '12px', color: 'var(--white-a70)', marginBottom: '4px', display: 'block' }}>
                 Your Shareable 360° Link (Zero Remote Database):
               </label>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <input
                   id="share-input"
                   type="text"
                   readOnly
                   value={peerShareUrl}
                   style={{
-                    flex: 1,
+                    flex: '1 1 200px',
                     fontSize: '12px',
                     fontFamily: 'monospace',
                     color: '#38bdf8',
@@ -285,6 +287,7 @@ export default function HomePage() {
                     border: '1px solid var(--white-a15)',
                     padding: '8px 10px',
                     borderRadius: 'var(--r-default)',
+                    minWidth: 0,
                   }}
                   onClick={(e) => (e.target as HTMLInputElement).select()}
                 />
@@ -292,7 +295,7 @@ export default function HomePage() {
                   type="button"
                   className="btn primary"
                   onClick={handleCopyShareLink}
-                  style={{ padding: '8px 14px', fontSize: '12.5px', whiteSpace: 'nowrap' }}
+                  style={{ padding: '8px 14px', fontSize: '12.5px', whiteSpace: 'nowrap', flex: '0 0 auto' }}
                 >
                   {copiedShare ? '✓ Copied' : 'Copy Link'}
                 </button>
@@ -314,7 +317,7 @@ export default function HomePage() {
                 type="button"
                 className="btn quiet"
                 onClick={handleSimulatePeer}
-                style={{ fontSize: '12.5px', color: '#38bdf8', padding: '6px 12px' }}
+                style={{ fontSize: '12px', color: '#38bdf8', padding: '6px 10px', textAlign: 'left' }}
               >
                 ⚡ Test with Simulated Colleague Data
               </button>
@@ -323,7 +326,7 @@ export default function HomePage() {
                 type="button"
                 className="btn secondary"
                 onClick={() => setIsShareModalOpen(false)}
-                style={{ fontSize: '12.5px', padding: '6px 14px' }}
+                style={{ fontSize: '12.5px', padding: '6px 14px', minWidth: '80px' }}
               >
                 Done
               </button>

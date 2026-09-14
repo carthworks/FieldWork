@@ -28,14 +28,22 @@ The studio features a **live 2-column layout** where your roadmap and diagnostic
 2. **Work Culture & Leadership Fit**:
    - Select what conditions help you do your best work (e.g., *Flexibility*, *Clear expectations*, *Purpose*, *Collaboration*).
    - Choose how you prefer to be led and supported by managers and peers (e.g., *Give ownership, not constant oversight*, *Coaching, not just managing*).
-3. **Calibrate 6 Operating Traits**:
-   - Adjust the electric-lime range sliders (1 to 10) for:
+3. **Calibrate 6 Operating Traits & Grounded Forced Choices**:
+   - **Forced-Choice Behavioral Dilemmas**:
+     - **Follow-Through**: *"Scrap & Restart Fresh"* vs. *"Finish It Badly"* (replaces abstract self-rating with real dilemma tradeoffs).
+     - **Challenge & Ambition**: *"Fortify What Works"* vs. *"Push Into the Deep End"*.
+   - **Calibrated Sliders**:
      - **Curiosity**: Sticking with what you know vs. Chasing new things
-     - **Follow-through**: Improvising as you go vs. Finishing what you start
      - **Social Energy**: Recharging alone vs. Recharging around people
      - **Reading People**: Focusing on the task vs. Tracking the room
      - **Steadiness under Pressure**: Feeling it sharply vs. Staying level
-     - **Appetite for Challenge**: Protecting what works vs. Pushing for more
+   - **Reverse-Worded Verification Probes**:
+     - Validates stated traits against visceral delivery friction (detects acquiescence and aspiration bias).
+   - **Straight-Lining Detection**:
+     - Automatically flags if all sliders land in the 5–7 mid-zone, encouraging genuine contrast.
+   - **360° Colleague Rating & Dual Hexagon Overlay**:
+     - Share a private link (`/peer-review?u=...&s=...`) for a peer or manager to rate observed traits.
+     - Draws a dual-color polygon (**Electric Lime** for Self vs. **Electric Cyan** for Colleague) revealing **Blindspots** and **Hidden Superpowers**.
 4. **Focus & Ambitions**:
    - Pick 3 to 5 areas of interest (e.g., *Technical craft*, *Leading people*, *Creative work*, *Starting something*).
    - Choose your primary target goal for this horizon.
@@ -83,6 +91,47 @@ Fieldwork delivers a comprehensive suite of personalized career and development 
 - **Copy Plan**: One-click Markdown export of your complete plan to the clipboard for Notion, Slack, or documentation.
 - **Export PDF**: Clean, print-optimized format with buttons and navigation hidden.
 - **Local Persistence**: All inputs, selected tags, and checked tasks are safely remembered in `localStorage`.
+
+---
+
+## ⚡ Signal Quality Upgrades Implemented
+
+To eliminate self-assessment noise and straight-lining, Fieldwork implements a comprehensive three-tier signal quality calibration system:
+
+> *"Signal quality is your weakest link. Six self-rated sliders is one person's opinion of themselves on a good day."*
+
+### 1. Straight-Lining & Mid-Zone Clustering Detection
+- **The Problem**: When respondents rate everything moderately (5–7), traditional tools present an unearned, confident archetype built entirely on noise.
+- **The Fix**: Fieldwork computes real-time variance and mid-zone clustering across your 6 operating traits. If all traits land between 5 and 7 (or score variance $< 1.0$), the studio flags **`Straight-Lining Detected`** with an electric-rose diagnostic banner urging the user to embrace genuine contrast and identify real operational peaks and valleys.
+
+### 2. Reverse-Worded Verification Probes
+- **The Problem**: Aspiration bias leads people to rate themselves high on abstract traits like Curiosity and Steadiness.
+- **The Fix**: Introduces visceral delivery friction probes with agreement chips:
+  - *Curiosity Check*: *"I prefer sticking to standard, proven routines over experimenting with unproven methods."*
+  - *Steadiness Check*: *"Unexpected emergencies throw off my focus for the remainder of the day."*
+- Detects discrepancies between self-image and delivery reality.
+
+### 3. Grounded Forced-Choice Behavioral Dilemma Cards
+- **The Problem**: Asking someone to rate their own follow-through or ambition yields self-flattery.
+- **The Fix**: Replaces abstract sliders with concrete behavioral tradeoffs:
+  - **Follow-Through Dilemma**: *"When a critical project stalls, I'd rather scrap it and restart fresh / push through and finish it badly than leave it half-done."*
+  - **Challenge & Ambition Dilemma**: *"When choosing your next horizon, I'd rather fortify and master proven systems / push into the deep end on an ambiguous stretch."*
+
+### 4. 360° Colleague Calibration & Dual Hexagon Overlay
+- **The Problem**: Self-ratings only reflect one person's internal self-image.
+- **The Fix**: 
+  - Generate a secure, private share URL (`/peer-review?u=...&s=...`) for a colleague, manager, or peer to rate observed traits (100% client-side via URL query encoding, zero remote storage).
+  - Draws the colleague's shape in **Electric Cyan** directly over the user's **Electric Lime** polygon in the radar container.
+  - Automatically calculates **Perception Gaps**:
+    - **Blindspots**: Areas where self-rating exceeds peer observations by $\ge 2$ points.
+    - **Hidden Superpowers**: Strengths colleagues experience that the user undervalues.
+    - **Aligned Baselines**: Shared mutual clarity.
+
+### 5. Mobile-Ready Responsive Architecture
+- **Adaptive Layout**: 100% fluid across viewports from 320px (iPhone SE, compact Android) up to 4K displays.
+- **Sticky Mobile Tab Switcher**: Full-width segmented tab switcher (`Studio` / `Plan View` / `Signals`) allowing users on mobile to easily flip between entering signals and viewing their live roadmap without endless scrolling.
+- **Touch Targets ($\ge 44\text{px}$)**: Enhanced range slider thumbs (26px touch targets), full-width stacked dilemma cards on small screens, and spacious checklist tap targets adhering strictly to WCAG 2.1 AA.
+- **Safe Area Insets**: Native notch and dynamic island padding support on iOS Safari (`env(safe-area-inset-top/bottom)`).
 
 ---
 
