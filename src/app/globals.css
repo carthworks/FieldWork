@@ -1292,6 +1292,15 @@ textarea:focus-visible {
   text-decoration: underline !important;
 }
 
+.hover-lime-border {
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.hover-lime-border:hover {
+  border-color: rgba(209, 254, 23, 0.45) !important;
+  color: var(--lime-100) !important;
+}
+
 /* Print Overrides */
 @media print {
   body {

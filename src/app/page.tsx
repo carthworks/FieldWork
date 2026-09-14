@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { PlanFormState, TraitId } from '@/types/plan';
+import { PlanFormState, TraitId, PlanSnapshot, TaskItem } from '@/types/plan';
 import { DEFAULT_PLAN_STATE, TRAITS } from '@/lib/constants';
 import { generatePlan } from '@/lib/engine';
 import {
@@ -9,6 +9,8 @@ import {
   saveFormState,
   loadCompletedTasks,
   saveCompletedTasks,
+  loadCustomTasks,
+  saveCustomTasks,
   clearSavedPlan,
 } from '@/lib/storage';
 import { StudioHeader, StudioViewMode } from '@/components/Studio/StudioHeader';
@@ -28,9 +30,14 @@ export default function HomePage() {
   useEffect(() => {
     const savedState = loadSavedFormState();
     const savedTasks = loadCompletedTasks();
+    const savedCustomTasks = loadCustomTasks();
     const savedView = typeof window !== 'undefined'
       ? (localStorage.getItem('fieldwork_view_mode') as StudioViewMode) || 'studio'
       : 'studio';
+
+    if (savedCustomTasks && Object.keys(savedCustomTasks).length > 0) {
+      savedState.customTasks = savedCustomTasks;
+    }
 
     // Parse any incoming peer review data from URL parameters
     if (typeof window !== 'undefined') {
@@ -76,6 +83,55 @@ export default function HomePage() {
       saveCompletedTasks(next);
       return next;
     });
+  };
+
+  const handleUpdatePhaseTasks = (phaseIdx: number, newTasks: TaskItem[]) => {
+    setFormState((prev) => {
+      const updatedCustom = { ...(prev.customTasks || {}), [phaseIdx]: newTasks };
+      const next = { ...prev, customTasks: updatedCustom };
+      saveFormState(next);
+      saveCustomTasks(updatedCustom);
+      return next;
+    });
+  };
+
+  const handleResetPhaseTasks = (phaseIdx: number) => {
+    setFormState((prev) => {
+      const updatedCustom = { ...(prev.customTasks || {}) };
+      delete updatedCustom[phaseIdx];
+      const next = { ...prev, customTasks: updatedCustom };
+      saveFormState(next);
+      saveCustomTasks(updatedCustom);
+      return next;
+    });
+  };
+
+  const handleImportPlan = (data: {
+    state: PlanFormState;
+    completedTasks: Record<string, boolean>;
+    customTasks?: Record<number, TaskItem[]>;
+  }) => {
+    const nextState: PlanFormState = {
+      ...data.state,
+      customTasks: data.customTasks || data.state.customTasks,
+    };
+    setFormState(nextState);
+    setCompletedTasks(data.completedTasks);
+    saveFormState(nextState);
+    saveCompletedTasks(data.completedTasks);
+    if (data.customTasks) {
+      saveCustomTasks(data.customTasks);
+    }
+  };
+
+  const handleRestoreSnapshot = (snapshot: PlanSnapshot) => {
+    setFormState(snapshot.state);
+    setCompletedTasks(snapshot.completedTasks);
+    saveFormState(snapshot.state);
+    saveCompletedTasks(snapshot.completedTasks);
+    if (snapshot.state.customTasks) {
+      saveCustomTasks(snapshot.state.customTasks);
+    }
   };
 
   const handleViewModeChange = (mode: StudioViewMode) => {
@@ -141,7 +197,7 @@ export default function HomePage() {
     handleStateChange({ peerReview: null });
   };
 
-  // Live real-time deterministic assessment calculation
+  // Generate assessment dynamically from reactive form inputs
   const assessment = useMemo(() => {
     return generatePlan(formState);
   }, [formState]);
@@ -154,8 +210,8 @@ export default function HomePage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0f1113',
-          color: 'var(--neutral-500)',
+          background: 'var(--canvas)',
+          color: 'var(--white)',
           fontFamily: 'var(--font-sans)',
         }}
       >
@@ -172,6 +228,10 @@ export default function HomePage() {
         onViewModeChange={handleViewModeChange}
         onRestart={handleRestart}
         onRequestPeerReview={() => setIsShareModalOpen(true)}
+        formState={formState}
+        completedTasks={completedTasks}
+        onImportPlan={handleImportPlan}
+        onRestoreSnapshot={handleRestoreSnapshot}
       />
 
       <main className="studio-main">
@@ -185,6 +245,8 @@ export default function HomePage() {
               onRequestPeerReview={() => setIsShareModalOpen(true)}
               onSimulatePeer={handleSimulatePeer}
               onClearPeer={handleClearPeer}
+              onUpdatePhaseTasks={handleUpdatePhaseTasks}
+              onResetPhaseTasks={handleResetPhaseTasks}
             />
           </div>
         )}
@@ -198,6 +260,8 @@ export default function HomePage() {
               onRequestPeerReview={() => setIsShareModalOpen(true)}
               onSimulatePeer={handleSimulatePeer}
               onClearPeer={handleClearPeer}
+              onUpdatePhaseTasks={handleUpdatePhaseTasks}
+              onResetPhaseTasks={handleResetPhaseTasks}
             />
           </div>
         )}

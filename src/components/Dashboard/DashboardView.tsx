@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssessmentResult } from '@/types/plan';
+import { AssessmentResult, TaskItem } from '@/types/plan';
 import { BannerHeader } from './BannerHeader';
 import { GenerationalPlaybookCard } from './GenerationalPlaybookCard';
 import { TraitScoresPanel } from './TraitScoresPanel';
@@ -16,6 +16,8 @@ interface DashboardViewProps {
   onRequestPeerReview?: () => void;
   onSimulatePeer?: () => void;
   onClearPeer?: () => void;
+  onUpdatePhaseTasks?: (phaseIdx: number, newTasks: TaskItem[]) => void;
+  onResetPhaseTasks?: (phaseIdx: number) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -25,6 +27,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onRequestPeerReview,
   onSimulatePeer,
   onClearPeer,
+  onUpdatePhaseTasks,
+  onResetPhaseTasks,
 }) => {
   return (
     <section className="dashboard-content animate-fade-in" style={{ width: '100%' }}>
@@ -62,6 +66,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         habits={assessment.habits}
         completedTasks={completedTasks}
         onToggleTask={onToggleTask}
+        assessment={assessment}
+        onUpdatePhaseTasks={onUpdatePhaseTasks}
+        onResetPhaseTasks={onResetPhaseTasks}
       />
 
       <NotesReviewPanel notes={assessment.notes} />

@@ -208,7 +208,7 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
     picks[2] ? INTEREST_ACT[picks[2]] : FOCUS[bottom[0].id].acts[2],
   ];
 
-  const phases: PhasePlan[] = [
+  const defaultPhases: PhasePlan[] = [
     {
       label: pl[0],
       title: 'Clear the ground',
@@ -225,6 +225,16 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
       tasks: phase3Tasks.map((text, idx) => ({ id: `p3_t${idx}`, text })),
     },
   ];
+
+  const phases: PhasePlan[] = defaultPhases.map((phase, idx) => {
+    if (state.customTasks && state.customTasks[idx] && state.customTasks[idx].length > 0) {
+      return {
+        ...phase,
+        tasks: state.customTasks[idx],
+      };
+    }
+    return phase;
+  });
 
   const habits: string[] = picks
     .slice(0, 3)

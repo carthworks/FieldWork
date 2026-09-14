@@ -65,6 +65,7 @@ export interface PlanFormState {
   leadershipNeeds: string[];
   reverseProbes?: Partial<Record<'curiosity_probe' | 'steady_probe', number>>;
   peerReview?: PeerReviewData | null;
+  customTasks?: Record<number, TaskItem[]>;
 }
 
 export type SignalQualityStatus =
@@ -172,4 +173,21 @@ export interface AssessmentResult {
   peerReview?: PeerReviewData | null;
   perceptionGaps?: PerceptionGap[];
 }
+
+export interface PersonaPreset {
+  id: string;
+  name: string;
+  tagline: string;
+  icon: string;
+  state: Partial<PlanFormState>;
+}
+
+export interface PlanSnapshot {
+  id: string;
+  title: string;
+  createdAt: string;
+  state: PlanFormState;
+  completedTasks: Record<string, boolean>;
+}
+
 

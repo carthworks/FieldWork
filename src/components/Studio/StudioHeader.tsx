@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Wordmark } from '../Common/Wordmark';
-import { AssessmentResult } from '@/types/plan';
+import { AssessmentResult, PlanFormState, PlanSnapshot, TaskItem } from '@/types/plan';
+import {
+  exportPlanAsJson,
+  downloadJsonFile,
+  importPlanFromJson,
+  loadPlanSnapshots,
+  savePlanSnapshot,
+  deletePlanSnapshot,
+} from '@/lib/storage';
 
 export type StudioViewMode = 'studio' | 'plan' | 'inputs';
 
@@ -11,6 +19,14 @@ interface StudioHeaderProps {
   onViewModeChange: (mode: StudioViewMode) => void;
   onRestart: () => void;
   onRequestPeerReview?: () => void;
+  formState: PlanFormState;
+  completedTasks: Record<string, boolean>;
+  onImportPlan: (data: {
+    state: PlanFormState;
+    completedTasks: Record<string, boolean>;
+    customTasks?: Record<number, TaskItem[]>;
+  }) => void;
+  onRestoreSnapshot: (snapshot: PlanSnapshot) => void;
 }
 
 export const StudioHeader: React.FC<StudioHeaderProps> = ({
@@ -19,9 +35,29 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   onViewModeChange,
   onRestart,
   onRequestPeerReview,
+  formState,
+  completedTasks,
+  onImportPlan,
+  onRestoreSnapshot,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [snapshots, setSnapshots] = useState<PlanSnapshot[]>([]);
+  const [snapshotTitle, setSnapshotTitle] = useState('');
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load snapshots when opening modal
+  useEffect(() => {
+    if (isBackupModalOpen) {
+      setSnapshots(loadPlanSnapshots());
+      setSnapshotTitle(`Review ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`);
+      setImportError(null);
+      setImportSuccess(false);
+    }
+  }, [isBackupModalOpen]);
 
   const handlePrint = () => {
     setIsMobileMenuOpen(false);
@@ -72,6 +108,71 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
     }
   };
 
+  const handleExportJson = () => {
+    const jsonStr = exportPlanAsJson(formState, completedTasks, formState.customTasks);
+    const filename = `fieldwork-plan-${(formState.name || 'plan').toLowerCase().replace(/[^a-z0-9]/g, '-')}-${assessment.horizon}d.json`;
+    downloadJsonFile(filename, jsonStr);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImportError(null);
+    setImportSuccess(false);
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      const res = importPlanFromJson(content);
+      if (res.success && res.state) {
+        onImportPlan({
+          state: res.state,
+          completedTasks: res.completedTasks || {},
+          customTasks: res.customTasks || {},
+        });
+        setImportSuccess(true);
+        setTimeout(() => {
+          setIsBackupModalOpen(false);
+        }, 1500);
+      } else {
+        setImportError(res.error || 'Failed to parse plan file.');
+      }
+    };
+    reader.onerror = () => {
+      setImportError('Failed to read file from disk.');
+    };
+    reader.readAsText(file);
+  };
+
+  const handleSaveSnapshot = () => {
+    const title = snapshotTitle.trim() || `Plan ${new Date().toLocaleDateString()}`;
+    const newSnapshot: PlanSnapshot = {
+      id: `snap_${Date.now()}`,
+      title,
+      createdAt: new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      state: formState,
+      completedTasks,
+    };
+    const updated = savePlanSnapshot(newSnapshot);
+    setSnapshots(updated);
+    setSnapshotTitle(`Review ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`);
+  };
+
+  const handleDeleteSnapshot = (id: string) => {
+    const updated = deletePlanSnapshot(id);
+    setSnapshots(updated);
+  };
+
+  const handleRestoreSnapshotClick = (snap: PlanSnapshot) => {
+    onRestoreSnapshot(snap);
+    setIsBackupModalOpen(false);
+  };
+
   const handleMobilePeerReview = () => {
     setIsMobileMenuOpen(false);
     if (onRequestPeerReview) onRequestPeerReview();
@@ -93,7 +194,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           </span>
         </div>
 
-        {/* Mobile Quick Action & Menu Button (hidden on desktop via CSS) */}
+        {/* Mobile Quick Action & Menu Button */}
         <div className="studio-mobile-toggle">
           {onRequestPeerReview && (
             <button
@@ -172,6 +273,16 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           style={{ padding: '6px 12px', fontSize: '12.5px' }}
         >
           Export PDF
+        </button>
+
+        <button
+          type="button"
+          className="btn secondary"
+          onClick={() => setIsBackupModalOpen(true)}
+          style={{ padding: '6px 12px', fontSize: '12.5px' }}
+          title="Export/Import JSON backup or manage saved plan snapshots"
+        >
+          💾 Data &amp; Snapshots
         </button>
 
         {onRequestPeerReview && (
@@ -273,6 +384,18 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             📄 Export PDF / Print Plan
           </button>
 
+          <button
+            type="button"
+            className="btn secondary"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              setIsBackupModalOpen(true);
+            }}
+            style={{ justifyContent: 'flex-start', padding: '10px 14px' }}
+          >
+            💾 Data Backup &amp; Snapshots
+          </button>
+
           <Link
             href="/how-to"
             className="btn secondary"
@@ -290,6 +413,227 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           >
             🔄 Reset All Inputs to Defaults
           </button>
+        </div>
+      )}
+
+      {/* Backup, Restore & Snapshots Modal */}
+      {isBackupModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="backup-modal-title"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            background: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+          onClick={() => setIsBackupModalOpen(false)}
+        >
+          <div
+            className="hf-card"
+            style={{
+              maxWidth: '560px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              background: '#14171a',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.8)',
+              padding: '24px',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+                borderBottom: '1px solid var(--white-a10)',
+                paddingBottom: '12px',
+              }}
+            >
+              <h3
+                id="backup-modal-title"
+                style={{
+                  margin: 0,
+                  fontSize: '18px',
+                  fontFamily: 'var(--font-grotesk)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <span>💾</span> Plan Data &amp; Snapshots
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsBackupModalOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--white-a50)',
+                  fontSize: '18px',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Section 1: File Export & Import */}
+            <div style={{ marginBottom: '24px' }}>
+              <h4 style={{ fontSize: '13px', textTransform: 'uppercase', color: 'var(--lime-100)', letterSpacing: '0.04em', margin: '0 0 8px' }}>
+                1. JSON Backup &amp; Migration
+              </h4>
+              <p style={{ fontSize: '12.5px', color: 'var(--white-a70)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                Export your full configuration, trait scores, and completed checkboxes as a standalone JSON file to transfer between browsers or machines.
+              </p>
+
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn primary"
+                  onClick={handleExportJson}
+                  style={{ padding: '8px 14px', fontSize: '12.5px' }}
+                >
+                  Download .json Backup
+                </button>
+
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ padding: '8px 14px', fontSize: '12.5px' }}
+                >
+                  Import .json Backup
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+              </div>
+
+              {importSuccess && (
+                <div style={{ marginTop: '10px', padding: '8px 12px', background: 'rgba(209, 254, 23, 0.1)', border: '1px solid var(--lime-100)', borderRadius: 'var(--r-md)', color: 'var(--lime-100)', fontSize: '12.5px' }}>
+                  ✓ Plan successfully imported and loaded into Studio!
+                </div>
+              )}
+
+              {importError && (
+                <div style={{ marginTop: '10px', padding: '8px 12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 'var(--r-md)', color: '#ef4444', fontSize: '12.5px' }}>
+                  ✕ {importError}
+                </div>
+              )}
+            </div>
+
+            {/* Section 2: Local Version Snapshots */}
+            <div>
+              <h4 style={{ fontSize: '13px', textTransform: 'uppercase', color: 'var(--lime-100)', letterSpacing: '0.04em', margin: '0 0 8px' }}>
+                2. Save Version Snapshot
+              </h4>
+              <p style={{ fontSize: '12.5px', color: 'var(--white-a70)', margin: '0 0 12px', lineHeight: 1.45 }}>
+                Freeze your current answers as a named milestone (e.g. &ldquo;Q1 Baseline&rdquo;) to compare and switch between versions over time.
+              </p>
+
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                <input
+                  type="text"
+                  placeholder="Snapshot name..."
+                  value={snapshotTitle}
+                  onChange={(e) => setSnapshotTitle(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveSnapshot()}
+                  style={{
+                    flex: 1,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    borderRadius: 'var(--r-md)',
+                    padding: '8px 12px',
+                    color: 'var(--white)',
+                    fontSize: '13px',
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={handleSaveSnapshot}
+                  style={{ padding: '8px 14px', fontSize: '12.5px', whiteSpace: 'nowrap' }}
+                >
+                  Save Snapshot
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {snapshots.length === 0 ? (
+                  <p style={{ fontSize: '12px', color: 'var(--white-a40)', margin: 0, fontStyle: 'italic' }}>
+                    No snapshots saved yet. Create one above to anchor your review baseline.
+                  </p>
+                ) : (
+                  snapshots.map((snap) => (
+                    <div
+                      key={snap.id}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        borderRadius: 'var(--r-md)',
+                        padding: '10px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '10px',
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--white)' }}>
+                          {snap.title}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--white-a50)', marginTop: '2px' }}>
+                          Saved {snap.createdAt} · {snap.state.role} · {snap.state.horizon}d horizon
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                          type="button"
+                          className="btn primary"
+                          onClick={() => handleRestoreSnapshotClick(snap)}
+                          style={{ padding: '4px 10px', fontSize: '11.5px' }}
+                        >
+                          Load
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSnapshot(snap.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--white-a40)',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            padding: '4px 6px',
+                          }}
+                          title="Delete snapshot"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </header>

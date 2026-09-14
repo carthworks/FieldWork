@@ -15,6 +15,7 @@ import {
   GENERATION_GUIDES,
   FORCED_CHOICE_PAIRS,
   REVERSE_PROBES,
+  PERSONA_PRESETS,
 } from '@/lib/constants';
 import {
   calculateAgeFromDob,
@@ -115,6 +116,67 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
 
   return (
     <aside className="signals-panel-wrapper">
+      {/* 00. Fast-Start Persona Presets */}
+      <div
+        className="hf-card"
+        style={{
+          background: 'linear-gradient(135deg, rgba(209, 254, 23, 0.08) 0%, rgba(26, 29, 32, 0.7) 100%)',
+          border: '1px solid rgba(209, 254, 23, 0.3)',
+          padding: '14px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '15px' }}>⚡</span>
+            <span
+              style={{
+                fontFamily: 'var(--font-grotesk)',
+                fontWeight: 700,
+                fontSize: '12.5px',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                color: 'var(--lime-100)',
+              }}
+            >
+              Fast-Start Archetype Presets
+            </span>
+          </div>
+          <span className="badge badge-neutral" style={{ fontSize: '11px', padding: '2px 7px' }}>1-Click Load</span>
+        </div>
+
+        <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--white-a70)', lineHeight: 1.4 }}>
+          Jump straight into a calibrated roadmap or use them as a starting baseline:
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {PERSONA_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => onChange(preset.state)}
+              className="hover-lime-border"
+              title={preset.tagline}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: 'var(--r-md)',
+                padding: '5px 10px',
+                fontSize: '12px',
+                color: 'var(--white-a90)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <span>{preset.icon}</span>
+              <span style={{ fontWeight: 500 }}>{preset.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* 01. Profile & Life-Stage Card */}
       <div className="hf-card">
         <div className="hf-card-header">
