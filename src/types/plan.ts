@@ -63,6 +63,43 @@ export interface PlanFormState {
   notes: string;
   thriveFactors: string[];
   leadershipNeeds: string[];
+  reverseProbes?: Partial<Record<'curiosity_probe' | 'steady_probe', number>>;
+  peerReview?: PeerReviewData | null;
+}
+
+export type SignalQualityStatus =
+  | 'high_contrast'
+  | 'moderate'
+  | 'straight_lined'
+  | 'discrepant';
+
+export interface SignalQualityReport {
+  status: SignalQualityStatus;
+  variance: number;
+  mean: number;
+  straightLined: boolean;
+  hasDiscrepancy: boolean;
+  message: string;
+  actionPrompt?: string;
+  details: string[];
+}
+
+export interface PeerReviewData {
+  peerName: string;
+  peerRole?: string;
+  traits: Record<TraitId, number>;
+  submittedAt?: string;
+}
+
+export interface PerceptionGap {
+  traitId: TraitId;
+  traitName: string;
+  selfScore: number;
+  peerScore: number;
+  delta: number; // peerScore - selfScore
+  type: 'blindspot' | 'hidden_strength' | 'aligned';
+  headline: string;
+  coachingAdvice: string;
 }
 
 export interface CohortInfo {
@@ -116,6 +153,7 @@ export interface AssessmentResult {
   archetypeTagline: string;
   paceDescription: string;
   scoredTraits: ScoredTrait[];
+  traits: Record<TraitId, number>;
   strengths: StrengthItem[];
   interestSynergyText: string;
   focusItems: FocusItem[];
@@ -130,4 +168,8 @@ export interface AssessmentResult {
   userName: string;
   age: number;
   playbook: GenerationalPlaybook;
+  signalQuality: SignalQualityReport;
+  peerReview?: PeerReviewData | null;
+  perceptionGaps?: PerceptionGap[];
 }
+

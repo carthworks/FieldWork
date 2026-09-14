@@ -10,6 +10,7 @@ interface StudioHeaderProps {
   viewMode: StudioViewMode;
   onViewModeChange: (mode: StudioViewMode) => void;
   onRestart: () => void;
+  onRequestPeerReview?: () => void;
 }
 
 export const StudioHeader: React.FC<StudioHeaderProps> = ({
@@ -17,6 +18,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   viewMode,
   onViewModeChange,
   onRestart,
+  onRequestPeerReview,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -123,6 +125,23 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
         >
           Export PDF
         </button>
+
+        {onRequestPeerReview && (
+          <button
+            type="button"
+            className="btn secondary"
+            onClick={onRequestPeerReview}
+            style={{
+              padding: '6px 12px',
+              fontSize: '12.5px',
+              color: '#38bdf8',
+              borderColor: 'rgba(56, 189, 248, 0.4)',
+            }}
+            title="Request a colleague rating to view a 360 dual-polygon overlay"
+          >
+            360° Review
+          </button>
+        )}
 
         <Link
           href="/how-to"

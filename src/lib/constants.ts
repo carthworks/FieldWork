@@ -208,7 +208,93 @@ export const DEFAULT_PLAN_STATE: PlanFormState = {
     'Making room for ideas',
     'Coaching, not just managing',
   ],
+  reverseProbes: {
+    curiosity_probe: 3,
+    steady_probe: 3,
+  },
+  peerReview: null,
 };
+
+export interface ForcedChoiceOption {
+  id: string;
+  label: string;
+  score: number;
+  tagline: string;
+}
+
+export interface ForcedChoiceDefinition {
+  traitId: TraitId;
+  title: string;
+  scenario: string;
+  options: [ForcedChoiceOption, ForcedChoiceOption];
+}
+
+export const FORCED_CHOICE_PAIRS: Record<'follow' | 'drive', ForcedChoiceDefinition> = {
+  follow: {
+    traitId: 'follow',
+    title: 'Follow-Through Dilemma',
+    scenario: 'When a critical project stalls or drags into messy friction...',
+    options: [
+      {
+        id: 'restart',
+        label: 'Scrap & Restart Fresh',
+        score: 3,
+        tagline: "I'd rather scrap stalled work and start fresh than grind through the ugly last 20%.",
+      },
+      {
+        id: 'finish_badly',
+        label: 'Finish It Badly',
+        score: 9,
+        tagline: "I'd rather push through and finish it badly than ever leave it half-done on the table.",
+      },
+    ],
+  },
+  drive: {
+    traitId: 'drive',
+    title: 'Challenge & Ambition Dilemma',
+    scenario: 'When given full autonomy over your quarterly focus...',
+    options: [
+      {
+        id: 'fortify',
+        label: 'Fortify What Works',
+        score: 3,
+        tagline: "I'd rather master, optimize, and stabilize a proven domain without risking public failure.",
+      },
+      {
+        id: 'stretch',
+        label: 'Push Into the Deep End',
+        score: 9,
+        tagline: "I'd rather chase an ambiguous, high-stakes stretch even if there is a real chance of falling short.",
+      },
+    ],
+  },
+};
+
+export interface ReverseProbeDefinition {
+  id: 'curiosity_probe' | 'steady_probe';
+  targetTrait: TraitId;
+  statement: string;
+  rationale: string;
+}
+
+export const REVERSE_PROBES: ReverseProbeDefinition[] = [
+  {
+    id: 'curiosity_probe',
+    targetTrait: 'curiosity',
+    statement:
+      'In high-stakes work, I strongly prefer proven, standard operating procedures over experimenting with unproven methods.',
+    rationale:
+      'Tests if high self-rated curiosity holds when real delivery consequences exist.',
+  },
+  {
+    id: 'steady_probe',
+    targetTrait: 'steady',
+    statement:
+      'Unexpected emergencies or harsh critique throw off my mental focus for the remainder of the workday.',
+    rationale:
+      'Tests if self-rated steadiness reflects actual recovery speed under stress.',
+  },
+];
 
 export const ARCHETYPE: Record<TraitId, { n: string; l: string }> = {
   curiosity: {

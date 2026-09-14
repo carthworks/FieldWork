@@ -8,6 +8,9 @@ import {
   PhasePlan,
   PlanningHorizon,
   GenerationalPlaybook,
+  TraitId,
+  SignalQualityReport,
+  PerceptionGap,
 } from '@/types/plan';
 import {
   TRAITS,
@@ -254,12 +257,20 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
     leadershipAdvice: genGuide.leadershipAdvice,
   };
 
+  const signalQuality = calculateSignalQuality(state.traits, state.reverseProbes);
+
+  const peerReview = state.peerReview || null;
+  const perceptionGaps = peerReview
+    ? calculatePerceptionGaps(state.traits, peerReview.traits, peerReview.peerName)
+    : undefined;
+
   return {
     cohort: co,
     archetypeName,
     archetypeTagline,
     paceDescription,
     scoredTraits,
+    traits: state.traits,
     strengths,
     interestSynergyText,
     focusItems,
@@ -274,5 +285,150 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
     userName: state.name || 'Friend',
     age,
     playbook,
+    signalQuality,
+    peerReview,
+    perceptionGaps,
   };
 }
+
+export function calculateSignalQuality(
+  traits: Record<TraitId, number>,
+  reverseProbes?: Partial<Record<'curiosity_probe' | 'steady_probe', number>>
+): SignalQualityReport {
+  const vals = Object.values(traits);
+  const mean = vals.reduce((a, b) => a + b, 0) / (vals.length || 1);
+  const variance =
+    vals.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (vals.length || 1);
+  const stdDev = Math.sqrt(variance);
+
+  // Check straight-lining: all in [5, 7] or identical
+  const allInMidZone = vals.every((v) => v >= 5 && v <= 7);
+  const isIdentical = vals.every((v) => v === vals[0]);
+  const straightLined = isIdentical || (allInMidZone && stdDev <= 0.85);
+
+  const details: string[] = [];
+
+  // Check reverse probes for internal consistency
+  let hasDiscrepancy = false;
+  if (reverseProbes) {
+    if ((traits.curiosity ?? 5) >= 8 && (reverseProbes.curiosity_probe ?? 0) >= 4) {
+      hasDiscrepancy = true;
+      details.push(
+        `Curiosity Tension: You rated Curiosity at ${traits.curiosity}/10, but noted a strong preference for standard operating procedures when stakes are high.`
+      );
+    }
+    if ((traits.steady ?? 5) >= 8 && (reverseProbes.steady_probe ?? 0) >= 4) {
+      hasDiscrepancy = true;
+      details.push(
+        `Steadiness Tension: You rated Pressure Steadiness at ${traits.steady}/10, but noted unexpected fires disrupt your mental focus for the entire workday.`
+      );
+    }
+  }
+
+  if (straightLined) {
+    details.push(
+      `Straight-Lining Detected: All 6 traits are clustered in the safe 5–7 mid-zone (StdDev: ${stdDev.toFixed(
+        2
+      )}).`
+    );
+    return {
+      status: 'straight_lined',
+      variance,
+      mean,
+      straightLined: true,
+      hasDiscrepancy,
+      message:
+        'Signal Quality Alert: Flat Mid-Zone Clustering (Straight-Lining). You rated all six traits in the safe 5–7 middle zone. A development plan built on flat noise produces generic advice.',
+      actionPrompt:
+        'Push your actual extremes. Where are you truly in your element (8–10), and where do you hit genuine friction (1–4)? Real contrast unlocks high-confidence archetypes and blindspots.',
+      details,
+    };
+  }
+
+  if (hasDiscrepancy) {
+    return {
+      status: 'discrepant',
+      variance,
+      mean,
+      straightLined: false,
+      hasDiscrepancy: true,
+      message:
+        'Calibration Gap Detected: Your rated trait strengths show meaningful tension with your behavioral probe responses.',
+      actionPrompt:
+        'Consider whether your high self-ratings reflect how you aspire to operate vs. how you actually behave under delivery pressure.',
+      details,
+    };
+  }
+
+  if (stdDev >= 1.8) {
+    return {
+      status: 'high_contrast',
+      variance,
+      mean,
+      straightLined: false,
+      hasDiscrepancy: false,
+      message:
+        'High Signal Quality: Sharp contrast across traits unlocks high-confidence archetype and blindspot analysis.',
+      details: ['Distinct peaks and valleys across operating baseline.'],
+    };
+  }
+
+  return {
+    status: 'moderate',
+    variance,
+    mean,
+    straightLined: false,
+    hasDiscrepancy: false,
+    message:
+      'Moderate Signal Quality: Healthy distribution across operating dimensions.',
+    details: ['Balanced variance across traits.'],
+  };
+}
+
+export function calculatePerceptionGaps(
+  selfTraits: Record<TraitId, number>,
+  peerTraits: Record<TraitId, number>,
+  peerName = 'Colleague'
+): PerceptionGap[] {
+  return TRAITS.map((t) => {
+    const selfScore = selfTraits[t.id] ?? 5;
+    const peerScore = peerTraits[t.id] ?? 5;
+    const delta = peerScore - selfScore;
+
+    if (delta <= -2) {
+      return {
+        traitId: t.id,
+        traitName: t.name,
+        selfScore,
+        peerScore,
+        delta,
+        type: 'blindspot' as const,
+        headline: `Potential Blindspot (${Math.abs(delta)} pts lower)`,
+        coachingAdvice: `You perceive yourself at ${selfScore}/10, but ${peerName} observes ${peerScore}/10. Ask for specific examples in your next 1-on-1 where your execution felt lower than your internal intent.`,
+      };
+    } else if (delta >= 2) {
+      return {
+        traitId: t.id,
+        traitName: t.name,
+        selfScore,
+        peerScore,
+        delta,
+        type: 'hidden_strength' as const,
+        headline: `Hidden Superpower (+${delta} pts higher)`,
+        coachingAdvice: `${peerName} observes ${peerScore}/10, outperforming your self-rating of ${selfScore}/10. You project capability and poise that you may be discounting.`,
+      };
+    } else {
+      return {
+        traitId: t.id,
+        traitName: t.name,
+        selfScore,
+        peerScore,
+        delta,
+        type: 'aligned' as const,
+        headline: 'Calibrated Alignment (±1 pt)',
+        coachingAdvice: `Self-perception and observed reality match cleanly. Both you and ${peerName} share the same assessment of your baseline here.`,
+      };
+    }
+  });
+}
+

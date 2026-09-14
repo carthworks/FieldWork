@@ -13,12 +13,18 @@ interface DashboardViewProps {
   assessment: AssessmentResult;
   completedTasks: Record<string, boolean>;
   onToggleTask: (taskId: string) => void;
+  onRequestPeerReview?: () => void;
+  onSimulatePeer?: () => void;
+  onClearPeer?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   assessment,
   completedTasks,
   onToggleTask,
+  onRequestPeerReview,
+  onSimulatePeer,
+  onClearPeer,
 }) => {
   return (
     <section className="dashboard-content animate-fade-in" style={{ width: '100%' }}>
@@ -27,7 +33,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <GenerationalPlaybookCard playbook={assessment.playbook} />
 
       <div className="insights-quad">
-        <TraitScoresPanel scoredTraits={assessment.scoredTraits} />
+        <TraitScoresPanel
+          scoredTraits={assessment.scoredTraits}
+          traits={assessment.traits}
+          signalQuality={assessment.signalQuality}
+          peerReview={assessment.peerReview}
+          perceptionGaps={assessment.perceptionGaps}
+          onRequestPeerReview={onRequestPeerReview}
+          onSimulatePeer={onSimulatePeer}
+          onClearPeer={onClearPeer}
+        />
         <StrengthsPanel
           strengths={assessment.strengths}
           synergyText={assessment.interestSynergyText}

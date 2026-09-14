@@ -9,8 +9,18 @@ import {
   LearningStyle,
   PlanningHorizon,
 } from '@/types/plan';
-import { TRAITS, INTERESTS, GENERATION_GUIDES } from '@/lib/constants';
-import { calculateAgeFromDob, getGenerationGuide } from '@/lib/engine';
+import {
+  TRAITS,
+  INTERESTS,
+  GENERATION_GUIDES,
+  FORCED_CHOICE_PAIRS,
+  REVERSE_PROBES,
+} from '@/lib/constants';
+import {
+  calculateAgeFromDob,
+  getGenerationGuide,
+  calculateSignalQuality,
+} from '@/lib/engine';
 
 interface SignalsPanelProps {
   state: PlanFormState;
@@ -262,21 +272,201 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
       </div>
 
-      {/* 03. Operating Traits (6 Sliders) */}
+      {/* 03. Operating Traits & Forced Choices */}
       <div className="hf-card">
         <div className="hf-card-header">
           <div className="title-group">
             <h3>03. Operating Traits</h3>
             <span className="desc">
-              Rate your actual baseline behaviors on 6 core dimensions.
+              Grounded behavioral pairs &amp; calibrated sliders.
             </span>
           </div>
-          <span className="badge badge-neutral">6 Signals</span>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            {calculateSignalQuality(state.traits, state.reverseProbes).straightLined ? (
+              <span className="badge badge-rose" title="Variance too low: push your extremes">
+                Straight-Lined
+              </span>
+            ) : calculateSignalQuality(state.traits, state.reverseProbes).status === 'high_contrast' ? (
+              <span className="badge badge-lime">High Contrast</span>
+            ) : (
+              <span className="badge badge-neutral">Calibrated</span>
+            )}
+          </div>
         </div>
 
         <div className="sliders-container">
           {TRAITS.map((t) => {
             const currentVal = state.traits[t.id] ?? 5;
+
+            // Forced-Choice Pair: Follow-through
+            if (t.id === 'follow') {
+              const fc = FORCED_CHOICE_PAIRS.follow;
+              const isRestart = currentVal <= 5;
+              const isFinishBadly = currentVal > 5;
+
+              return (
+                <div
+                  key="fc-follow"
+                  style={{
+                    background: 'var(--surface-2)',
+                    border: '1px solid rgba(209, 254, 23, 0.25)',
+                    borderRadius: 'var(--r-md)',
+                    padding: '12px 14px',
+                    marginBottom: '8px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="badge badge-lime" style={{ fontSize: '10.5px' }}>Forced-Choice</span>
+                      <strong style={{ fontSize: '13px', color: 'var(--white)' }}>{fc.title}</strong>
+                    </div>
+                    <span style={{ fontSize: '12px', color: 'var(--lime-100)', fontFamily: 'var(--font-grotesk)', fontWeight: 700 }}>
+                      Score: {currentVal} / 10
+                    </span>
+                  </div>
+
+                  <p style={{ margin: '0 0 10px', fontSize: '12.5px', color: 'var(--white-a80)', lineHeight: 1.4 }}>
+                    {fc.scenario}
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleTraitChange('follow', 3)}
+                      style={{
+                        textAlign: 'left',
+                        padding: '8px 10px',
+                        borderRadius: 'var(--r-default)',
+                        background: isRestart ? 'var(--lime-50-a20)' : 'var(--white-a5)',
+                        border: `1px solid ${isRestart ? 'var(--lime-100)' : 'var(--white-a10)'}`,
+                        color: isRestart ? 'var(--lime-100)' : 'var(--white-a80)',
+                        cursor: 'pointer',
+                        fontSize: '11.5px',
+                        lineHeight: 1.35,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <strong style={{ display: 'block', marginBottom: '2px', color: isRestart ? 'var(--white)' : 'var(--white-a90)' }}>
+                        Scrap &amp; Restart Fresh
+                      </strong>
+                      <span style={{ fontSize: '11px', color: isRestart ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                        I&rsquo;d rather abandon stalled work and chase a fresh idea.
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleTraitChange('follow', 9)}
+                      style={{
+                        textAlign: 'left',
+                        padding: '8px 10px',
+                        borderRadius: 'var(--r-default)',
+                        background: isFinishBadly ? 'var(--lime-50-a20)' : 'var(--white-a5)',
+                        border: `1px solid ${isFinishBadly ? 'var(--lime-100)' : 'var(--white-a10)'}`,
+                        color: isFinishBadly ? 'var(--lime-100)' : 'var(--white-a80)',
+                        cursor: 'pointer',
+                        fontSize: '11.5px',
+                        lineHeight: 1.35,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <strong style={{ display: 'block', marginBottom: '2px', color: isFinishBadly ? 'var(--white)' : 'var(--white-a90)' }}>
+                        Finish It Badly
+                      </strong>
+                      <span style={{ fontSize: '11px', color: isFinishBadly ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                        I&rsquo;d rather finish it badly than leave it half-done.
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            // Forced-Choice Pair: Appetite for Challenge / Drive
+            if (t.id === 'drive') {
+              const fc = FORCED_CHOICE_PAIRS.drive;
+              const isFortify = currentVal <= 5;
+              const isStretch = currentVal > 5;
+
+              return (
+                <div
+                  key="fc-drive"
+                  style={{
+                    background: 'var(--surface-2)',
+                    border: '1px solid rgba(209, 254, 23, 0.25)',
+                    borderRadius: 'var(--r-md)',
+                    padding: '12px 14px',
+                    marginBottom: '8px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="badge badge-lime" style={{ fontSize: '10.5px' }}>Forced-Choice</span>
+                      <strong style={{ fontSize: '13px', color: 'var(--white)' }}>{fc.title}</strong>
+                    </div>
+                    <span style={{ fontSize: '12px', color: 'var(--lime-100)', fontFamily: 'var(--font-grotesk)', fontWeight: 700 }}>
+                      Score: {currentVal} / 10
+                    </span>
+                  </div>
+
+                  <p style={{ margin: '0 0 10px', fontSize: '12.5px', color: 'var(--white-a80)', lineHeight: 1.4 }}>
+                    {fc.scenario}
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleTraitChange('drive', 3)}
+                      style={{
+                        textAlign: 'left',
+                        padding: '8px 10px',
+                        borderRadius: 'var(--r-default)',
+                        background: isFortify ? 'var(--lime-50-a20)' : 'var(--white-a5)',
+                        border: `1px solid ${isFortify ? 'var(--lime-100)' : 'var(--white-a10)'}`,
+                        color: isFortify ? 'var(--lime-100)' : 'var(--white-a80)',
+                        cursor: 'pointer',
+                        fontSize: '11.5px',
+                        lineHeight: 1.35,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <strong style={{ display: 'block', marginBottom: '2px', color: isFortify ? 'var(--white)' : 'var(--white-a90)' }}>
+                        Fortify What Works
+                      </strong>
+                      <span style={{ fontSize: '11px', color: isFortify ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                        Master and optimize a proven domain without risking public failure.
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleTraitChange('drive', 9)}
+                      style={{
+                        textAlign: 'left',
+                        padding: '8px 10px',
+                        borderRadius: 'var(--r-default)',
+                        background: isStretch ? 'var(--lime-50-a20)' : 'var(--white-a5)',
+                        border: `1px solid ${isStretch ? 'var(--lime-100)' : 'var(--white-a10)'}`,
+                        color: isStretch ? 'var(--lime-100)' : 'var(--white-a80)',
+                        cursor: 'pointer',
+                        fontSize: '11.5px',
+                        lineHeight: 1.35,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <strong style={{ display: 'block', marginBottom: '2px', color: isStretch ? 'var(--white)' : 'var(--white-a90)' }}>
+                        Push Into the Deep End
+                      </strong>
+                      <span style={{ fontSize: '11px', color: isStretch ? 'var(--white-a80)' : 'var(--white-a60)' }}>
+                        Chase an ambiguous, high-stakes stretch even if it might fail.
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            // Regular Sliders for Curiosity, Social, Read, Steady
             return (
               <div className="slider-item" key={t.id}>
                 <div className="slider-top">
@@ -300,6 +490,78 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
               </div>
             );
           })}
+        </div>
+
+        {/* Reverse-Worded Verification Probes */}
+        <div
+          style={{
+            marginTop: '18px',
+            borderTop: '1px solid var(--white-a10)',
+            paddingTop: '14px',
+          }}
+        >
+          <div style={{ marginBottom: '8px' }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--lime-100)', display: 'block' }}>
+              ✦ Reverse-Worded Calibration Probes
+            </span>
+            <span style={{ fontSize: '11.5px', color: 'var(--neutral-500)' }}>
+              Tests whether self-rated traits hold under real delivery pressure.
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {REVERSE_PROBES.map((probe) => {
+              const currentScore = state.reverseProbes?.[probe.id] ?? 3;
+
+              return (
+                <div
+                  key={probe.id}
+                  style={{
+                    background: 'var(--white-a5)',
+                    border: '1px solid var(--white-a10)',
+                    borderRadius: 'var(--r-default)',
+                    padding: '8px 10px',
+                  }}
+                >
+                  <p style={{ margin: '0 0 6px', fontSize: '12px', color: 'var(--white-a90)', lineHeight: 1.4 }}>
+                    &ldquo;{probe.statement}&rdquo;
+                  </p>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--white-a50)' }}>Disagree</span>
+                    <div style={{ display: 'flex', gap: '4px', flex: 1, justifyContent: 'center' }}>
+                      {[1, 2, 3, 4, 5].map((val) => (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => {
+                            const next = { ...state.reverseProbes, [probe.id]: val };
+                            onChange({ reverseProbes: next });
+                          }}
+                          style={{
+                            width: '26px',
+                            height: '24px',
+                            borderRadius: '3px',
+                            border: `1px solid ${
+                              currentScore === val ? 'var(--lime-100)' : 'var(--white-a10)'
+                            }`,
+                            background:
+                              currentScore === val ? 'var(--lime-50-a20)' : 'transparent',
+                            color: currentScore === val ? 'var(--lime-100)' : 'var(--white-a70)',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {val}
+                        </button>
+                      ))}
+                    </div>
+                    <span style={{ fontSize: '11px', color: 'var(--white-a50)' }}>Agree</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

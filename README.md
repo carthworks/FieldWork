@@ -100,18 +100,25 @@ It provides a detailed breakdown of each deliverable, tips for 1-on-1s, and quar
 
 ```
 my-nature/
-├── README.md                           # Documentation & Deliverables guide
+├── README.md                           # Documentation, Deliverables & Compliance guide
 ├── package.json                        # Next.js 15, React 19, TypeScript
 ├── tsconfig.json                       # Path aliases (@/*)
 ├── next.config.ts                      # Next.js configuration
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx                  # Inter & Space Grotesk Google fonts
-│   │   ├── page.tsx                    # Live Single Page Studio (SPA)
+│   │   ├── layout.tsx                  # Inter & Space Grotesk Google fonts, Metadata & Signature
+│   │   ├── page.tsx                    # Live Single Page Studio (SPA) + Footer
 │   │   ├── how-to/
 │   │   │   └── page.tsx                # Dedicated User Guide & Deliverables page
-│   │   ├── not-found.tsx               # Custom 404 page
-│   │   └── globals.css                 # Complete Higgsfield AI design system
+│   │   ├── privacy/
+│   │   │   └── page.tsx                # Privacy Policy, GDPR/CCPA & Zero-Tracking Guarantee
+│   │   ├── terms/
+│   │   │   └── page.tsx                # Terms of Service & Open Source License
+│   │   ├── robots.ts                   # Next.js App Router robots.txt generator
+│   │   ├── sitemap.ts                  # Next.js App Router sitemap.xml generator
+│   │   ├── error.tsx                   # Client-side error boundary with recovery
+│   │   ├── not-found.tsx               # Custom 404 page with brand styling
+│   │   └── globals.css                 # Complete Higgsfield AI design system & WCAG AA focus rings
 │   ├── types/
 │   │   └── plan.ts                     # TypeScript interfaces
 │   ├── lib/
@@ -121,7 +128,9 @@ my-nature/
 │   └── components/
 │       ├── Common/
 │       │   ├── Wordmark.tsx            # Brand mark with electric lime diamond
-│       │   └── Button.tsx              # Higgsfield button component
+│       │   ├── Button.tsx              # Higgsfield button component
+│       │   ├── Footer.tsx              # Trust anchors, legal links, and author credits
+│       │   └── ConsoleSignature.tsx    # DevTools styled console branding & window.Fieldwork helper
 │       ├── Studio/
 │       │   ├── StudioHeader.tsx        # Top navbar with view switcher & export actions
 │       │   └── SignalsPanel.tsx        # Left column: DOB, Culture, Traits, Focus inputs
@@ -171,3 +180,41 @@ npm run lint    # Runs tsc --noEmit
 npm run build
 npm run start
 ```
+
+---
+
+## 🔒 Web Trust, Privacy & Anti-Dark Patterns
+
+Fieldwork is built according to rigorous consumer trust and legal standards:
+- **Zero Remote Telemetry**: 100% of data processing (archetype derivation, generational playbook matching, trait scoring) happens client-side. No user input or date of birth is sent across the internet.
+- **Zero Tracking Cookies**: No marketing pixels, third-party cookies, or surveillance scripts.
+- **Data Minimization**: Uses browser `localStorage` solely to maintain your active plan and completed tasks.
+- **1-Click Reset**: Clear all stored data at any time with a single confirmation.
+- **Transparent Open Access**: Free forever, no paywalls, no drip pricing, no subscription continuity traps.
+- **WCAG 2.1 AA Accessibility**: High contrast dark theme tokens, semantic HTML5 structure, accessible range sliders, and high-visibility `:focus-visible` focus rings for keyboard navigation.
+
+---
+
+## 💻 Developer Console Signature & DevTools API
+
+When opening browser Developer Tools (`F12`), Fieldwork outputs a styled ASCII branding banner and registers an interactive helper object on `window.Fieldwork`:
+
+```javascript
+// Available in browser DevTools:
+Fieldwork.help()             // Displays available helper commands table
+Fieldwork.getPlan()          // Returns current state, tasks, and calculated assessment
+Fieldwork.getState()         // Returns raw input signals
+Fieldwork.getCompletedTasks()// Returns checked milestones dictionary
+Fieldwork.reset()            // Prompts and clears saved data
+Fieldwork.developer          // Author metadata and profile links
+Fieldwork.version            // Active application build version
+```
+
+---
+
+## 📄 License & Author
+
+- **Author**: Karthikeyan T ([@carthworks](https://github.com/carthworks))
+- **LinkedIn**: [Karthikeyan T](https://www.linkedin.com/in/carthworks)
+- **License**: Released under the **Apache-2.0 / MIT License**. Free for personal and commercial self-development use.
+
