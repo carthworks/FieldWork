@@ -22,6 +22,7 @@ import {
   getGenerationGuide,
   calculateSignalQuality,
 } from '@/lib/engine';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface SignalsPanelProps {
   state: PlanFormState;
@@ -32,6 +33,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
   state,
   onChange,
 }) => {
+  const { t: translate } = useLanguage();
   const { age, birthYear } = calculateAgeFromDob(state.dob, state.age);
   const genGuide = getGenerationGuide(birthYear);
   const pickedInterests = state.interests || [];
@@ -192,7 +194,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
 
         <div className="field">
-          <label htmlFor="user-name">Your Name</label>
+          <label htmlFor="user-name">{translate('field_full_name')}</label>
           <input
             id="user-name"
             type="text"
@@ -204,7 +206,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
 
         <div className="row">
           <div className="field">
-            <label htmlFor="user-dob">Date of Birth (DOB)</label>
+            <label htmlFor="user-dob">{translate('field_dob')}</label>
             <input
               id="user-dob"
               type="date"
@@ -214,7 +216,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
           </div>
 
           <div className="field">
-            <label htmlFor="user-age">Age (Auto-calculated)</label>
+            <label htmlFor="user-age">{translate('field_age')}</label>
             <input
               id="user-age"
               type="number"
@@ -231,7 +233,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
 
         <div className="field">
-          <label htmlFor="user-role">What takes up most of your week?</label>
+          <label htmlFor="user-role">{translate('field_role')}</label>
           <select
             id="user-role"
             value={state.role}
@@ -249,7 +251,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
 
         <div className="row">
           <div className="field">
-            <label htmlFor="user-hours">Protected Hours / Week</label>
+            <label htmlFor="user-hours">{translate('field_target_hours')}</label>
             <select
               id="user-hours"
               value={state.hours}
@@ -263,7 +265,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
           </div>
 
           <div className="field">
-            <label htmlFor="user-energy">Peak Clarity Window</label>
+            <label htmlFor="user-energy">{translate('field_peak_energy')}</label>
             <select
               id="user-energy"
               value={state.energy}
@@ -668,7 +670,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
 
         <div className="field" style={{ marginTop: '14px' }}>
-          <label htmlFor="user-goal">Target Goal for this Horizon</label>
+          <label htmlFor="user-goal">{translate('field_goal')}</label>
           <select
             id="user-goal"
             value={state.goal}
@@ -697,7 +699,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
 
         <div className="field">
-          <label htmlFor="user-blocker">Primary Blocker (Honest Read)</label>
+          <label htmlFor="user-blocker">{translate('field_blocker')}</label>
           <select
             id="user-blocker"
             value={state.blocker}
@@ -715,7 +717,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
 
         <div className="field">
-          <label htmlFor="user-learn">How Material Sticks Best</label>
+          <label htmlFor="user-learn">{translate('field_learning')}</label>
           <select
             id="user-learn"
             value={state.learn}
@@ -731,7 +733,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
         </div>
 
         <div className="field">
-          <label>Plan Horizon</label>
+          <label>{translate('field_horizon')}</label>
           <div className="segmented-control">
             {([30, 60, 90] as PlanningHorizon[]).map((hz) => (
               <button
@@ -748,7 +750,7 @@ export const SignalsPanel: React.FC<SignalsPanelProps> = ({
 
         <div className="field">
           <label htmlFor="user-notes">
-            Additional Context{' '}
+            {translate('field_notes')}{' '}
             <span style={{ fontWeight: 400, color: 'var(--neutral-500)' }}>
               (optional)
             </span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AssessmentResult, PhasePlan, PlanningHorizon, TaskItem } from '@/types/plan';
 import { generateIcsCalendar, downloadIcsFile } from '@/lib/calendar';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface PhasedPlanCardProps {
   horizon: PlanningHorizon;
@@ -26,6 +27,7 @@ export const PhasedPlanCard: React.FC<PhasedPlanCardProps> = ({
   onUpdatePhaseTasks,
   onResetPhaseTasks,
 }) => {
+  const { t } = useLanguage();
   const [copiedIcs, setCopiedIcs] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
@@ -99,7 +101,7 @@ export const PhasedPlanCard: React.FC<PhasedPlanCardProps> = ({
     <div className="roadmap-card">
       <div className="roadmap-header" style={{ flexWrap: 'wrap', gap: '14px' }}>
         <div>
-          <h3>Your {horizon}-Day Action Roadmap</h3>
+          <h3>{t('dash_roadmap_title')} ({horizon}d)</h3>
           <p>
             High-leverage steps paced for {paceDescription}. Track live, edit actions, or export directly to your calendar.
           </p>
@@ -410,7 +412,7 @@ export const PhasedPlanCard: React.FC<PhasedPlanCardProps> = ({
               color: 'var(--white-a70)',
             }}
           >
-            Weekly Habits:
+            {t('dash_weekly_habits')}:
           </span>
           <div className="habits-wrap">
             {habits.map((habit, idx) => (

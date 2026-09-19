@@ -1,6 +1,7 @@
 import React from 'react';
 import { TRAITS } from '@/lib/constants';
 import { TraitId } from '@/types/plan';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface TraitRadarPolygonProps {
   traits: Record<TraitId, number>;
@@ -25,6 +26,7 @@ export const TraitRadarPolygon: React.FC<TraitRadarPolygonProps> = ({
   peerName = 'Colleague',
   showPeer = true,
 }) => {
+  const { t: translate } = useLanguage();
   // Self Shape
   const selfShape = TRAITS.map((t, i) =>
     pt(i, traits[t.id] ?? 5)
@@ -290,7 +292,7 @@ export const TraitRadarPolygon: React.FC<TraitRadarPolygonProps> = ({
                 fontFamily="var(--font-sans)"
                 fontWeight="600"
               >
-                {t.name}
+                {translate(`trait_${t.id}` as any)}
               </tspan>
               <tspan
                 dx="6"

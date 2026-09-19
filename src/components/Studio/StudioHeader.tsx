@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Wordmark } from '../Common/Wordmark';
+import { LanguageSelector } from '../Common/LanguageSelector';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { AssessmentResult, PlanFormState, PlanSnapshot, TaskItem } from '@/types/plan';
 import {
   exportPlanAsJson,
@@ -40,6 +42,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   onImportPlan,
   onRestoreSnapshot,
 }) => {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
@@ -221,7 +224,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             aria-label="Toggle actions menu"
             style={{ padding: '5px 10px', fontSize: '12px' }}
           >
-            {isMobileMenuOpen ? '✕ Close' : '⋯ Menu'}
+            {isMobileMenuOpen ? t('nav_close') : t('nav_menu')}
           </button>
         </div>
       </div>
@@ -236,7 +239,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={() => onViewModeChange('studio')}
             title="Side-by-side Inputs & Live Plan"
           >
-            Studio
+            {t('nav_studio')}
           </button>
           <button
             type="button"
@@ -244,7 +247,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={() => onViewModeChange('plan')}
             title="Focus on Full Plan & Roadmap"
           >
-            Plan View
+            {t('nav_plan_view')}
           </button>
           <button
             type="button"
@@ -252,7 +255,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={() => onViewModeChange('inputs')}
             title="Focus on Signals & Inputs"
           >
-            Signals
+            {t('nav_signals')}
           </button>
         </div>
 
@@ -263,7 +266,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           onClick={handleCopySummary}
           style={{ padding: '6px 12px', fontSize: '12.5px' }}
         >
-          {copied ? '✓ Copied' : 'Copy Plan'}
+          {copied ? t('nav_copied') : t('nav_copy_plan')}
         </button>
 
         <button
@@ -272,7 +275,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           onClick={handlePrint}
           style={{ padding: '6px 12px', fontSize: '12.5px' }}
         >
-          Export PDF
+          {t('nav_export_pdf')}
         </button>
 
         <button
@@ -282,7 +285,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           style={{ padding: '6px 12px', fontSize: '12.5px' }}
           title="Export/Import JSON backup or manage saved plan snapshots"
         >
-          💾 Data &amp; Snapshots
+          {t('nav_data_snapshots')}
         </button>
 
         {onRequestPeerReview && (
@@ -298,9 +301,12 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             }}
             title="Request a colleague rating to view a 360 dual-polygon overlay"
           >
-            360° Review
+            {t('nav_review_360')}
           </button>
         )}
+
+        {/* Language Selector Dropdown */}
+        <LanguageSelector variant="header" />
 
         <Link
           href="/how-to"
@@ -308,7 +314,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           style={{ padding: '6px 10px', fontSize: '12.5px' }}
           title="Learn how to use Fieldwork and explore deliverables"
         >
-          Guide &amp; Deliverables
+          {t('nav_guide')}
         </Link>
 
         <button
@@ -318,7 +324,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           style={{ padding: '6px 10px', fontSize: '12.5px' }}
           title="Reset answers to default"
         >
-          Reset
+          {t('nav_reset')}
         </button>
       </div>
 
@@ -329,27 +335,32 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
           className={`view-btn ${viewMode === 'studio' ? 'active' : ''}`}
           onClick={() => onViewModeChange('studio')}
         >
-          Studio
+          {t('nav_studio')}
         </button>
         <button
           type="button"
           className={`view-btn ${viewMode === 'plan' ? 'active' : ''}`}
           onClick={() => onViewModeChange('plan')}
         >
-          Plan View
+          {t('nav_plan_view')}
         </button>
         <button
           type="button"
           className={`view-btn ${viewMode === 'inputs' ? 'active' : ''}`}
           onClick={() => onViewModeChange('inputs')}
         >
-          Signals
+          {t('nav_signals')}
         </button>
       </div>
 
       {/* Mobile Drawer / Actions Dropdown */}
       {isMobileMenuOpen && (
         <div className="studio-mobile-menu">
+          {/* Mobile Language Selector */}
+          <div style={{ padding: '4px 0 10px', borderBottom: '1px solid var(--white-a10)', marginBottom: '8px' }}>
+            <LanguageSelector variant="drawer" />
+          </div>
+
           {onRequestPeerReview && (
             <button
               type="button"
@@ -362,7 +373,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                 padding: '10px 14px',
               }}
             >
-              🔗 Request 360° Colleague Review
+              🔗 {t('nav_review_360')}
             </button>
           )}
 
@@ -372,7 +383,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={handleCopySummary}
             style={{ justifyContent: 'flex-start', padding: '10px 14px' }}
           >
-            📋 {copied ? '✓ Plan Copied to Clipboard' : 'Copy Plan Summary'}
+            📋 {copied ? t('nav_copied') : t('nav_copy_plan')}
           </button>
 
           <button
@@ -381,7 +392,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={handlePrint}
             style={{ justifyContent: 'flex-start', padding: '10px 14px' }}
           >
-            📄 Export PDF / Print Plan
+            📄 {t('nav_export_pdf')}
           </button>
 
           <button
@@ -393,7 +404,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             }}
             style={{ justifyContent: 'flex-start', padding: '10px 14px' }}
           >
-            💾 Data Backup &amp; Snapshots
+            {t('nav_data_snapshots')}
           </button>
 
           <Link
@@ -402,7 +413,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={() => setIsMobileMenuOpen(false)}
             style={{ justifyContent: 'flex-start', padding: '10px 14px' }}
           >
-            📖 User Guide &amp; Deliverables
+            📖 {t('nav_guide')}
           </Link>
 
           <button
@@ -411,7 +422,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={handleMobileRestart}
             style={{ justifyContent: 'flex-start', padding: '8px 14px', color: 'var(--rose-500)' }}
           >
-            🔄 Reset All Inputs to Defaults
+            🔄 {t('nav_reset')}
           </button>
         </div>
       )}
@@ -470,7 +481,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                   gap: '8px',
                 }}
               >
-                <span>💾</span> Plan Data &amp; Snapshots
+                <span>💾</span> {t('modal_data_title')}
               </h3>
               <button
                 type="button"
@@ -491,10 +502,10 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             {/* Section 1: File Export & Import */}
             <div style={{ marginBottom: '24px' }}>
               <h4 style={{ fontSize: '13px', textTransform: 'uppercase', color: 'var(--lime-100)', letterSpacing: '0.04em', margin: '0 0 8px' }}>
-                1. JSON Backup &amp; Migration
+                {t('modal_json_section')}
               </h4>
               <p style={{ fontSize: '12.5px', color: 'var(--white-a70)', margin: '0 0 12px', lineHeight: 1.45 }}>
-                Export your full configuration, trait scores, and completed checkboxes as a standalone JSON file to transfer between browsers or machines.
+                {t('modal_json_desc')}
               </p>
 
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -504,7 +515,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                   onClick={handleExportJson}
                   style={{ padding: '8px 14px', fontSize: '12.5px' }}
                 >
-                  Download .json Backup
+                  {t('modal_btn_download_json')}
                 </button>
 
                 <button
@@ -513,7 +524,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                   onClick={() => fileInputRef.current?.click()}
                   style={{ padding: '8px 14px', fontSize: '12.5px' }}
                 >
-                  Import .json Backup
+                  {t('modal_btn_import_json')}
                 </button>
                 <input
                   ref={fileInputRef}
@@ -526,13 +537,13 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
 
               {importSuccess && (
                 <div style={{ marginTop: '10px', padding: '8px 12px', background: 'rgba(209, 254, 23, 0.1)', border: '1px solid var(--lime-100)', borderRadius: 'var(--r-md)', color: 'var(--lime-100)', fontSize: '12.5px' }}>
-                  ✓ Plan successfully imported and loaded into Studio!
+                  {t('modal_import_success')}
                 </div>
               )}
 
               {importError && (
                 <div style={{ marginTop: '10px', padding: '8px 12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: 'var(--r-md)', color: '#ef4444', fontSize: '12.5px' }}>
-                  ✕ {importError}
+                  {importError || t('modal_import_error')}
                 </div>
               )}
             </div>
@@ -540,16 +551,16 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             {/* Section 2: Local Version Snapshots */}
             <div>
               <h4 style={{ fontSize: '13px', textTransform: 'uppercase', color: 'var(--lime-100)', letterSpacing: '0.04em', margin: '0 0 8px' }}>
-                2. Save Version Snapshot
+                {t('modal_snapshot_section')}
               </h4>
               <p style={{ fontSize: '12.5px', color: 'var(--white-a70)', margin: '0 0 12px', lineHeight: 1.45 }}>
-                Freeze your current answers as a named milestone (e.g. &ldquo;Q1 Baseline&rdquo;) to compare and switch between versions over time.
+                {t('modal_snapshot_desc')}
               </p>
 
               <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
                 <input
                   type="text"
-                  placeholder="Snapshot name..."
+                  placeholder={t('modal_snapshot_placeholder')}
                   value={snapshotTitle}
                   onChange={(e) => setSnapshotTitle(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveSnapshot()}
@@ -570,14 +581,14 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                   onClick={handleSaveSnapshot}
                   style={{ padding: '8px 14px', fontSize: '12.5px', whiteSpace: 'nowrap' }}
                 >
-                  Save Snapshot
+                  {t('modal_btn_save_snapshot')}
                 </button>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {snapshots.length === 0 ? (
                   <p style={{ fontSize: '12px', color: 'var(--white-a40)', margin: 0, fontStyle: 'italic' }}>
-                    No snapshots saved yet. Create one above to anchor your review baseline.
+                    {t('modal_snapshot_none')}
                   </p>
                 ) : (
                   snapshots.map((snap) => (
@@ -610,7 +621,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                           onClick={() => handleRestoreSnapshotClick(snap)}
                           style={{ padding: '4px 10px', fontSize: '11.5px' }}
                         >
-                          Load
+                          {t('modal_btn_load')}
                         </button>
                         <button
                           type="button"
@@ -623,7 +634,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
                             cursor: 'pointer',
                             padding: '4px 6px',
                           }}
-                          title="Delete snapshot"
+                          title={t('modal_btn_delete')}
                         >
                           ✕
                         </button>

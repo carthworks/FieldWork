@@ -1,19 +1,21 @@
 import React from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface NotesReviewPanelProps {
   notes: string;
 }
 
 export const NotesReviewPanel: React.FC<NotesReviewPanelProps> = ({ notes }) => {
+  const { t } = useLanguage();
   if (!notes || !notes.trim()) return null;
 
   return (
     <div className="hf-card" style={{ marginTop: '16px' }}>
       <div className="hf-card-header" style={{ marginBottom: '8px' }}>
         <div className="title-group">
-          <h3>Your Additional Context</h3>
+          <h3>{t('notes_title')}</h3>
           <span className="desc">
-            Signals that weren&apos;t captured by the sliders.
+            {t('notes_desc')}
           </span>
         </div>
       </div>

@@ -109,6 +109,20 @@ export interface CohortInfo {
   myth: string;
 }
 
+export interface GenerationGuideEntry {
+  key: string;
+  name: string;
+  years: string;
+  minBirthYear: number;
+  maxBirthYear: number;
+  stereotype: string;
+  plainTruth: string;
+  defaultThrive: string[];
+  defaultNeeds: string[];
+  simpleScript: string;
+  leadershipAdvice: string;
+}
+
 export interface GenerationalPlaybook {
   generation: string;
   years: string;

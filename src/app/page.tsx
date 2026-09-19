@@ -17,8 +17,10 @@ import { StudioHeader, StudioViewMode } from '@/components/Studio/StudioHeader';
 import { SignalsPanel } from '@/components/Studio/SignalsPanel';
 import { DashboardView } from '@/components/Dashboard/DashboardView';
 import { Footer } from '@/components/Common/Footer';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function HomePage() {
+  const { language } = useLanguage();
   const [formState, setFormState] = useState<PlanFormState>(DEFAULT_PLAN_STATE);
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<StudioViewMode>('studio');
@@ -199,8 +201,8 @@ export default function HomePage() {
 
   // Generate assessment dynamically from reactive form inputs
   const assessment = useMemo(() => {
-    return generatePlan(formState);
-  }, [formState]);
+    return generatePlan(formState, language);
+  }, [formState, language]);
 
   if (!isHydrated) {
     return (

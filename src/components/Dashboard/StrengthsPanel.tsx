@@ -1,5 +1,6 @@
 import React from 'react';
 import { StrengthItem } from '@/types/plan';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface StrengthsPanelProps {
   strengths: StrengthItem[];
@@ -10,6 +11,8 @@ export const StrengthsPanel: React.FC<StrengthsPanelProps> = ({
   strengths,
   synergyText,
 }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="insight-panel">
       <div className="insight-panel-header">
@@ -23,7 +26,7 @@ export const StrengthsPanel: React.FC<StrengthsPanelProps> = ({
               display: 'inline-block',
             }}
           />
-          Strengths to Lean On
+          {t('dash_strengths_title')}
         </h3>
         <p>Built from your 3 highest traits.</p>
       </div>

@@ -28,6 +28,19 @@ import {
   GENERATION_GUIDES,
   GenerationGuideEntry,
 } from './constants';
+import { SupportedLanguage } from './i18n/types';
+import {
+  getLocalizedArchetype,
+  getLocalizedPace,
+  getLocalizedGoal,
+  getLocalizedEnergy,
+  getLocalizedPhaseLabels,
+  getLocalizedPhaseTitles,
+  getLocalizedDefaultHabit,
+  getLocalizedGenerationGuide,
+  getLocalizedCohort,
+  getLocalizedNatureParagraphs,
+} from './i18n/engineTranslations';
 
 export function calculateAgeFromDob(
   dob?: string,
@@ -58,23 +71,12 @@ export function calculateAgeFromDob(
   return { age: clampedAge, birthYear };
 }
 
-export function getGenerationGuide(birthYear: number): GenerationGuideEntry {
-  const match = GENERATION_GUIDES.find(
-    (g) => birthYear >= g.minBirthYear && birthYear <= g.maxBirthYear
-  );
-  if (match) return match;
-  if (birthYear > 2012) return GENERATION_GUIDES[4]; // Gen Alpha
-  return GENERATION_GUIDES[3]; // Boomers fallback
+export function getGenerationGuide(birthYear: number, lang: SupportedLanguage = 'en'): GenerationGuideEntry {
+  return getLocalizedGenerationGuide(birthYear, lang);
 }
 
-export function cohort(age: number, birthYear?: number): CohortInfo {
-  const year = birthYear ?? 2026 - age;
-  const guide = getGenerationGuide(year);
-  return {
-    band: guide.name,
-    years: guide.years,
-    myth: guide.stereotype,
-  };
+export function cohort(age: number, birthYear?: number, lang: SupportedLanguage = 'en'): CohortInfo {
+  return getLocalizedCohort(age, birthYear, lang);
 }
 
 export function traitBand(score: number): 'high' | 'mid' | 'low' {
@@ -89,10 +91,10 @@ export function phaseLabels(horizon: PlanningHorizon): [string, string, string] 
   return ['Month 1', 'Month 2', 'Month 3'];
 }
 
-export function generatePlan(state: PlanFormState): AssessmentResult {
+export function generatePlan(state: PlanFormState, lang: SupportedLanguage = 'en'): AssessmentResult {
   const { age, birthYear } = calculateAgeFromDob(state.dob, state.age);
-  const genGuide = getGenerationGuide(birthYear);
-  const co = cohort(age, birthYear);
+  const genGuide = getGenerationGuide(birthYear, lang);
+  const co = cohort(age, birthYear, lang);
 
   // Sort traits by value descending, tie-break alphabetically by id
   const sorted = [...TRAITS].sort((a, b) => {
@@ -104,10 +106,9 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
   const top = sorted.slice(0, 3);
   const bottom = sorted.slice(-2).reverse();
 
-  const primaryArch = ARCHETYPE[sorted[0].id];
-  const secondStreak = SECOND[sorted[1].id];
-  const archetypeName = `${primaryArch.n} with ${secondStreak}`;
-  const archetypeTagline = primaryArch.l;
+  const localizedArch = getLocalizedArchetype(sorted[0].id, sorted[1].id, lang);
+  const archetypeName = localizedArch.name;
+  const archetypeTagline = localizedArch.tagline;
 
   // Scored traits
   const scoredTraits: ScoredTrait[] = sorted.map((t) => {
@@ -158,37 +159,15 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
   // Nature paragraphs
   const socialV = state.traits.social ?? 5;
   const steadyV = state.traits.steady ?? 5;
-
-  const socialRead =
-    socialV >= 7
-      ? 'You think out loud and land on the answer in the middle of the sentence, so a day of solo work leaves you flat.'
-      : socialV <= 4
-      ? 'You process quietly and arrive with the conclusion already formed, which reads as certainty to people who did not see the work.'
-      : 'You switch between thinking alone and thinking out loud, and you need a week that has room for both.';
-
-  const natureParagraph1 = `${socialRead} ${ENERGY_LINE[state.energy]}`;
-
-  const steadyRead =
-    steadyV >= 7
-      ? 'go quiet and functional, which is useful, though people may stop asking how you are'
-      : steadyV <= 4
-      ? 'feel it immediately and carry it for a while afterwards, so recovery has to be scheduled rather than hoped for'
-      : 'hold for a while and then need a genuine break, usually about a day later than you take one';
-
-  const natureParagraph2 = `Under load you ${steadyRead}. New material sticks when ${LEARN_LINE[state.learn]} — so build the plan out of that, not out of whatever a course tells you to do.`;
+  const { paragraph1: natureParagraph1, paragraph2: natureParagraph2 } =
+    getLocalizedNatureParagraphs(socialV, steadyV, state.energy, state.learn, lang);
 
   // Pace
-  const paceDescription =
-    state.hours < 3
-      ? 'one small action a day'
-      : state.hours < 7
-      ? 'two or three sessions a week'
-      : state.hours < 13
-      ? 'a session most days'
-      : 'daily blocks with room to go deep';
+  const paceDescription = getLocalizedPace(state.hours, lang);
 
   // Phases & Actions
-  const pl = phaseLabels(state.horizon);
+  const pl = getLocalizedPhaseLabels(state.horizon, lang);
+  const phaseTitles = getLocalizedPhaseTitles(lang);
 
   const phase1Tasks: string[] = [
     bl.acts[0],
@@ -211,17 +190,17 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
   const defaultPhases: PhasePlan[] = [
     {
       label: pl[0],
-      title: 'Clear the ground',
+      title: phaseTitles[0],
       tasks: phase1Tasks.map((text, idx) => ({ id: `p1_t${idx}`, text })),
     },
     {
       label: pl[1],
-      title: 'Make it routine',
+      title: phaseTitles[1],
       tasks: phase2Tasks.map((text, idx) => ({ id: `p2_t${idx}`, text })),
     },
     {
       label: pl[2],
-      title: 'Put it in front of someone',
+      title: phaseTitles[2],
       tasks: phase3Tasks.map((text, idx) => ({ id: `p3_t${idx}`, text })),
     },
   ];
@@ -240,20 +219,31 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
     .slice(0, 3)
     .map((id) => INTEREST_HABIT[id])
     .filter(Boolean)
-    .concat(['Ten minutes each Friday: what moved, what stalled']);
+    .concat([getLocalizedDefaultHabit(lang)]);
 
-  const energyLabel =
-    state.energy === 'night' ? 'late at night' : state.energy;
+  const energyLabel = getLocalizedEnergy(state.energy, lang);
 
   // Generational Playbook
+  const allEnglishThrive = new Set(GENERATION_GUIDES.flatMap((g) => g.defaultThrive));
+  const hasCustomThrive =
+    state.thriveFactors &&
+    state.thriveFactors.length > 0 &&
+    state.thriveFactors.some((f) => !allEnglishThrive.has(f));
+
   const activeThrive =
-    state.thriveFactors && state.thriveFactors.length > 0
-      ? state.thriveFactors
+    hasCustomThrive && lang === 'en'
+      ? state.thriveFactors!
       : genGuide.defaultThrive;
 
+  const allEnglishNeeds = new Set(GENERATION_GUIDES.flatMap((g) => g.defaultNeeds));
+  const hasCustomNeeds =
+    state.leadershipNeeds &&
+    state.leadershipNeeds.length > 0 &&
+    state.leadershipNeeds.some((n) => !allEnglishNeeds.has(n));
+
   const activeNeeds =
-    state.leadershipNeeds && state.leadershipNeeds.length > 0
-      ? state.leadershipNeeds
+    hasCustomNeeds && lang === 'en'
+      ? state.leadershipNeeds!
       : genGuide.defaultNeeds;
 
   const playbook: GenerationalPlaybook = {
@@ -290,7 +280,7 @@ export function generatePlan(state: PlanFormState): AssessmentResult {
     habits,
     notes: state.notes,
     horizon: state.horizon,
-    goalLabel: GOAL_LINE[state.goal],
+    goalLabel: getLocalizedGoal(state.goal, lang),
     energyLabel,
     userName: state.name || 'Friend',
     age,

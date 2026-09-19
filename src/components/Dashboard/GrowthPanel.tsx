@@ -1,11 +1,14 @@
 import React from 'react';
 import { FocusItem } from '@/types/plan';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface GrowthPanelProps {
   focusItems: FocusItem[];
 }
 
 export const GrowthPanel: React.FC<GrowthPanelProps> = ({ focusItems }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="insight-panel">
       <div className="insight-panel-header">
@@ -19,7 +22,7 @@ export const GrowthPanel: React.FC<GrowthPanelProps> = ({ focusItems }) => {
               display: 'inline-block',
             }}
           />
-          Where to Put the Work
+          {t('dash_growth_title')}
         </h3>
         <p>Your two lowest traits + the blocker you identified.</p>
       </div>

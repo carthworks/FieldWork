@@ -81,7 +81,7 @@ html, body {
   padding: 0;
   background-color: var(--background);
   color: var(--white-a90);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), 'Noto Sans Tamil', 'Noto Sans Devanagari', 'Nirmala UI', system-ui, -apple-system, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -97,7 +97,7 @@ body {
 }
 
 h1, h2, h3, h4, .display-font {
-  font-family: var(--font-grotesk), var(--font-sans), sans-serif;
+  font-family: var(--font-grotesk), var(--font-sans), 'Noto Sans Tamil', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif;
   color: var(--white);
   font-weight: 700;
   letter-spacing: -0.02em;

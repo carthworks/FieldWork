@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ScoredTrait, TraitId, SignalQualityReport, PeerReviewData, PerceptionGap } from '@/types/plan';
 import { TraitRadarPolygon } from './TraitRadarPolygon';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface TraitScoresPanelProps {
   scoredTraits: ScoredTrait[];
@@ -25,6 +26,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
   onSimulatePeer,
   onClearPeer,
 }) => {
+  const { t: translate } = useLanguage();
   const [viewMode, setViewMode] = useState<'radar' | 'bars' | 'both'>('radar');
   const [showPeerOverlay, setShowPeerOverlay] = useState<boolean>(true);
 
@@ -62,7 +64,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
                   display: 'inline-block',
                 }}
               />
-              Key Character Traits &amp; Hexagon
+              {translate('traits_title')}
             </h3>
             {signalQuality?.straightLined && (
               <span
@@ -95,7 +97,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
           <p>
             {hasPeer
               ? 'Comparing your self-ratings (Lime) against observed peer perception (Cyan).'
-              : 'Multi-dimensional operational polygon & ranked baseline.'}
+              : translate('traits_desc')}
           </p>
         </div>
 
@@ -113,7 +115,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
             style={{ fontSize: '11.5px', padding: '3px 8px' }}
             title="Radar Polygon View"
           >
-            Radar
+            {translate('traits_radar_tab')}
           </button>
           <button
             type="button"
@@ -122,7 +124,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
             style={{ fontSize: '11.5px', padding: '3px 8px' }}
             title="Ranked Meters View"
           >
-            Bars
+            {translate('traits_bars_tab')}
           </button>
           <button
             type="button"
@@ -131,7 +133,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
             style={{ fontSize: '11.5px', padding: '3px 8px' }}
             title="Both Radar & Meters"
           >
-            Both
+            {translate('traits_both_tab')}
           </button>
         </div>
       </div>
@@ -377,7 +379,7 @@ export const TraitScoresPanel: React.FC<TraitScoresPanelProps> = ({
           {scoredTraits.map((t) => (
             <div className="trait-row" key={t.id}>
               <div className="trait-info">
-                <b>{t.name}</b>
+                <b>{translate(('trait_' + t.id) as any)}</b>
                 <i>{t.score} / 10</i>
               </div>
               <div className="trait-meter">

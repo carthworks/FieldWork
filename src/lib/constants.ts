@@ -8,6 +8,7 @@ import {
   LearningStyle,
   PlanFormState,
   PersonaPreset,
+  GenerationGuideEntry,
 } from '@/types/plan';
 
 export const TRAITS: TraitDefinition[] = [
@@ -80,19 +81,7 @@ export const INTERESTS: InterestDefinition[] = [
   { id: 'calm', label: 'Focus & calm' },
 ];
 
-export interface GenerationGuideEntry {
-  key: string;
-  name: string;
-  years: string;
-  minBirthYear: number;
-  maxBirthYear: number;
-  stereotype: string;
-  plainTruth: string;
-  defaultThrive: string[];
-  defaultNeeds: string[];
-  simpleScript: string;
-  leadershipAdvice: string;
-}
+export type { GenerationGuideEntry };
 
 export const GENERATION_GUIDES: GenerationGuideEntry[] = [
   {

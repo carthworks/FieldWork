@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { GenerationalPlaybook } from '@/types/plan';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface GenerationalPlaybookCardProps {
   playbook: GenerationalPlaybook;
@@ -8,6 +9,7 @@ interface GenerationalPlaybookCardProps {
 export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> = ({
   playbook,
 }) => {
+  const { t } = useLanguage();
   const [copiedScript, setCopiedScript] = useState(false);
 
   const handleCopyScript = async () => {
@@ -26,13 +28,13 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
       <div className="hf-card-header" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
         <div className="title-group">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <h3 style={{ fontSize: '18px' }}>Generational Alignment Playbook</h3>
+            <h3 style={{ fontSize: '18px' }}>{t('playbook_title')}</h3>
             <span className="badge badge-lime">
               {playbook.generation} ({playbook.years})
             </span>
           </div>
           <span className="desc">
-            A simple, understandable guide to thrive at work without the unfair stereotypes.
+            {t('playbook_desc')}
           </span>
         </div>
       </div>
@@ -59,10 +61,10 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
                 color: 'var(--rose-500)',
               }}
             >
-              The Unfair Stereotype
+              {t('playbook_stereotype')}
             </span>
             <span className="badge badge-rose" style={{ fontSize: '11px', padding: '1px 6px' }}>
-              Myth
+              {t('playbook_myth')}
             </span>
           </div>
           <p style={{ margin: 0, fontStyle: 'italic', color: 'var(--white-a70)', fontSize: '13px' }}>
@@ -82,7 +84,7 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
                 marginBottom: '4px',
               }}
             >
-              The Plain Truth
+              {t('playbook_plain_truth')}
             </span>
             <p style={{ margin: 0, color: 'var(--white-a90)', fontSize: '13px', lineHeight: 1.45 }}>
               {playbook.plainTruth}
@@ -104,7 +106,7 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
               marginBottom: '10px',
             }}
           >
-            What Helps You Thrive
+            {t('playbook_thrive')}
           </span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {playbook.thriveFactors.map((item, i) => (
@@ -139,7 +141,7 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
                 marginBottom: '6px',
               }}
             >
-              What You Need From Leaders &amp; Peers
+              {t('playbook_leadership')}
             </span>
             <ul style={{ margin: 0, paddingLeft: '18px', color: 'var(--white-a80)', fontSize: '13px', lineHeight: 1.5 }}>
               {playbook.leadershipNeeds.map((need, idx) => (
@@ -173,7 +175,7 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
               color: 'var(--lime-100)',
             }}
           >
-            How To Work With Me (Simple Conversation Script)
+            {t('playbook_script')}
           </span>
           <button
             type="button"
@@ -181,7 +183,7 @@ export const GenerationalPlaybookCard: React.FC<GenerationalPlaybookCardProps> =
             onClick={handleCopyScript}
             style={{ padding: '3px 8px', fontSize: '11px' }}
           >
-            {copiedScript ? '✓ Copied' : 'Copy Script'}
+            {copiedScript ? t('playbook_copied_script') : t('playbook_copy_script')}
           </button>
         </div>
         <p

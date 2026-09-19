@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { ConsoleSignature } from '@/components/Common/ConsoleSignature';
+import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -76,8 +77,10 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable}`}
     >
       <body suppressHydrationWarning>
-        <ConsoleSignature />
-        {children}
+        <LanguageProvider>
+          <ConsoleSignature />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

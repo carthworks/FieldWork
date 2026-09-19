@@ -1,8 +1,14 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { Wordmark } from './Wordmark';
+import { LanguageSelector } from './LanguageSelector';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export const Footer: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="studio-footer no-print" style={{
       borderTop: '1px solid var(--white-a10)',
@@ -28,13 +34,12 @@ export const Footer: React.FC = () => {
             <span className="badge badge-lime">v1.0.0</span>
           </div>
           <p style={{ margin: 0, color: 'var(--white-a70)', lineHeight: 1.5, fontSize: '13px' }}>
-            A modern, deterministic development studio translating personal signals and operating traits
-            into an actionable growth roadmap. Built using the Higgsfield AI design language.
+            {t('footer_tagline')}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
-            <span className="badge badge-neutral" style={{ fontSize: '11px' }}>🔒 Zero Tracking</span>
-            <span className="badge badge-neutral" style={{ fontSize: '11px' }}>⚡ 100% Client-Side</span>
-            <span className="badge badge-neutral" style={{ fontSize: '11px' }}>💾 LocalStorage Only</span>
+            <span className="badge badge-neutral" style={{ fontSize: '11px' }}>🔒 {t('footer_zero_tracking')}</span>
+            <span className="badge badge-neutral" style={{ fontSize: '11px' }}>⚡ {t('footer_client_side')}</span>
+            <span className="badge badge-neutral" style={{ fontSize: '11px' }}>💾 {t('footer_localstorage')}</span>
           </div>
         </div>
 
@@ -48,17 +53,17 @@ export const Footer: React.FC = () => {
             letterSpacing: '0.05em',
             marginBottom: '12px',
           }}>
-            Navigation
+            {t('footer_navigation')}
           </h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <li>
               <Link href="/" style={{ color: 'var(--white-a80)', textDecoration: 'none' }} className="hover-lime">
-                Live Studio
+                {t('nav_studio')}
               </Link>
             </li>
             <li>
               <Link href="/how-to" style={{ color: 'var(--white-a80)', textDecoration: 'none' }} className="hover-lime">
-                User Guide &amp; Deliverables
+                {t('nav_guide')}
               </Link>
             </li>
             <li>
@@ -84,12 +89,10 @@ export const Footer: React.FC = () => {
             letterSpacing: '0.05em',
             marginBottom: '12px',
           }}>
-            Trust &amp; Ethics
+            {t('footer_trust')}
           </h4>
           <p style={{ margin: 0, color: 'var(--white-a70)', lineHeight: 1.5, fontSize: '12.5px' }}>
-            Fieldwork operates completely inside your browser. No personal dates of birth,
-            names, or behavioral scores are ever transmitted to any remote servers, analytics
-            providers, or third parties.
+            {t('footer_trust_desc')}
           </p>
           <div style={{ marginTop: '10px' }}>
             <span style={{ color: 'var(--white-a50)', fontSize: '12px' }}>
@@ -108,7 +111,7 @@ export const Footer: React.FC = () => {
             letterSpacing: '0.05em',
             marginBottom: '12px',
           }}>
-            Crafted By
+            {t('footer_crafted_by')}
           </h4>
           <p style={{ margin: 0, color: 'var(--white-a80)', lineHeight: 1.5, fontSize: '13px' }}>
             Designed and engineered by <strong>Karthikeyan T</strong> (<code>@carthworks</code>).
@@ -149,12 +152,16 @@ export const Footer: React.FC = () => {
         gap: '12px',
       }}>
         <p style={{ margin: 0, color: 'var(--white-a50)', fontSize: '12px' }}>
-          © {new Date().getFullYear()} Fieldwork. Released under Apache-2.0 / MIT. All rights reserved.
+          © {new Date().getFullYear()} Fieldwork. {t('footer_rights')}
         </p>
-        <p style={{ margin: 0, color: 'var(--white-a40)', fontSize: '11.5px' }}>
-          Open Source Development Framework · Free &amp; Private Forever
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <LanguageSelector variant="footer" />
+          <p style={{ margin: 0, color: 'var(--white-a40)', fontSize: '11.5px' }}>
+            Open Source Development Framework · Free &amp; Private Forever
+          </p>
+        </div>
       </div>
     </footer>
   );
 };
+
